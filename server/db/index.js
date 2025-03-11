@@ -26,15 +26,27 @@ const SavedExerciseSchema = new mongoose.Schema({
   reps: { type: Number, default: null },
 });
 
+// REMOVE THIS WHEN DONE WITH PROJECT
+// const sleepSchema = new mongoose.Schema({
+//   quality: { type: Number, min: 0, max: 7 },
+//   goal: { type: Number, default: 8 },
+//   hours_slept: { type: Number, default: 8 },
+//   sleep_aid: { type: String, default: 'none' },
+//   disturbances: { type: Number, default: 0 },
+//   notes: { type: String, default: 'none' },
+//   begin_sleep: { type: Date, default: new Date() },
+//   stop_sleep: { type: Date, default: null },
+// });
+
 const sleepSchema = new mongoose.Schema({
   quality: { type: Number, min: 0, max: 7 },
-  goal: { type: Number, default: 8 },
-  hours_slept: { type: Number, default: 8 },
-  sleep_aid: { type: String, default: 'none' },
-  disturbances: { type: Number, default: 0 },
-  notes: { type: String, default: 'none' },
-  begin_sleep: { type: Date, default: new Date() },
-  stop_sleep: { type: Date, default: null },
+  goal: Number,
+  hours_slept: Number,
+  sleep_aid: String,
+  disturbances: Number,
+  notes: String,
+  begin_sleep: Date,
+  stop_sleep: Date,
 });
 
 const userSchema = new mongoose.Schema({

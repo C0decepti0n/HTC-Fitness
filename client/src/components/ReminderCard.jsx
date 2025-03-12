@@ -1,5 +1,5 @@
 
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios'
 
 const ReminderCard = ()=>{
@@ -30,6 +30,8 @@ setReminders(response.data)
   console.error("Can not get all reminders:", err)
 })
 }
+
+
 //axios Post
  const postReminders = () =>{
 axios.post('/reminders'),{
@@ -54,10 +56,10 @@ console.error("Can not create reminder:", err)
 
 
 // axios request to update
-const updateReminder = () =>{
-axios.patch('/')
+const updateReminder = (id, updatedReminder) =>{
+axios.patch(`/reminders/${id}`, updatedReminder)
 .then(()=>{
-  
+  getReminders();
 })
 .catch((err)=>{
   console.error(err)
@@ -67,10 +69,10 @@ axios.patch('/')
 
 
 // axios DELETE reminder
-const deleteReminder = () =>{
-axios.delete('/')
+const deleteReminder = (id) =>{
+axios.delete(`/reminders/${id}`)
 .then(()=>{
-  
+  getReminders();
 })
 .catch((err)=>{
   console.error(err)

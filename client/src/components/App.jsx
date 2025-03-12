@@ -5,6 +5,8 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
+import { AppProvider } from '@toolpad/core/AppProvider';
+import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -21,6 +23,7 @@ const lightTheme = createTheme({
   palette: {
     mode: 'light',
     background: {
+
       default: 'white',
     },
   },
@@ -87,6 +90,7 @@ const App = () => {
   };
 
   return (
+    <AppProvider>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -96,11 +100,13 @@ const App = () => {
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
             <Route path="/" element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <DashboardLayout>
                 <HomePage
                   user={userProfile}
                   exercises={exercises}
                   fetchRandomExercises={fetchRandomExercises}
                 />
+                </DashboardLayout>
               </ProtectedRoute>
             } />
             <Route path="/routines" element={
@@ -117,7 +123,7 @@ const App = () => {
         </Router>
       </ThemeProvider>
     </LocalizationProvider>
-
+    </AppProvider>
   );
 };
 

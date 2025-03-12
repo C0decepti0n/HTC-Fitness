@@ -45,3 +45,20 @@ router.patch('/', (res,req)=>{
 
 
 
+//DELETE
+router.delete('/', (res,req)=>{
+  Reminder.findByIdAndUpDelete(req.params.id)
+  .then((delReminder)=>{
+    if(delReminder){
+      res.sendStatus(200)
+    }else{
+      console.error("Failure to find reminder:")
+      res.sendStatus(404)
+    }
+  
+  })
+  .catch ((err)=>{
+    console.error('Failure to delete reminder:', err)
+    res.sendStatus(500)
+  })
+})

@@ -15,6 +15,7 @@ import NavBar from './NavBar.jsx';
 import HomePage from './HomePage.jsx';
 import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
+import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
 
 const lightTheme = createTheme({

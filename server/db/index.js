@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const sleepSchema = require('./sleep');
 
 // Exercise schema
 const exerciseSchema = new mongoose.Schema({
@@ -24,31 +25,6 @@ const SavedExerciseSchema = new mongoose.Schema({
   instructions: String,
   sets: { type: Number, default: null },
   reps: { type: Number, default: null },
-});
-
-// REMOVE THIS WHEN DONE WITH PROJECT
-// const sleepSchema = new mongoose.Schema({
-//   quality: { type: Number, min: 0, max: 7 },
-//   goal: { type: Number, default: 8 },
-//   hours_slept: { type: Number, default: 8 },
-//   sleep_aid: { type: String, default: 'none' },
-//   disturbances: { type: Number, default: 0 },
-//   notes: { type: String, default: 'none' },
-//   begin_sleep: { type: Date, default: new Date() },
-//   stop_sleep: { type: Date, default: null },
-// });
-
-const sleepSchema = new mongoose.Schema({
-  in_progress: Boolean,
-  quality: { type: Number, min: 0, max: 7 },
-  goal: Number,
-  hours_slept: Number,
-  sleep_aid: String,
-  disturbances: Number,
-  disturbance_notes: String,
-  begin_sleep: Date,
-  stop_sleep: Date,
-  user_id: Number,
 });
 
 const userSchema = new mongoose.Schema({

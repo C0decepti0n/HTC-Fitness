@@ -1,124 +1,166 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable no-underscore-dangle */
+import React, { useEffect, useState } from 'react';
 import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Grid,
-  TextField,
-  Typography,
-  IconButton,
+  Alert,
+  Grid2,
+  Snackbar,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import dayjs from 'dayjs';
 import axios from 'axios';
+import Chart from './Chart.jsx';
+import WeightCard from './WeightCard.jsx';
 
-const Routines = ({ userId }) => {
-  const [routineData, setRoutineData] = useState([]);
+const Sleep = ({ user }) => {
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  // State to toggle input visibility
+  const [showInputs, setShowInputs] = useState({
+    goal: false,
+    current: false,
+  });
+  // State to store user-input weights
+  const [weights, setWeights] = useState({
+    goalWeight: user.goal_weight || 0,
+    allWeights: user.weights || [],
+    currentWeight:
+      user.weights.length > 0
+        ? user.weights[user.weights.length - 1].weight
+        : 0,
+  });
 
-  const fetchSavedExercises = async () => {
-    try {
-      const response = await axios.get(`/api/users/${userId}`);
-      setRoutineData(
-        response.data.map((exercise) => ({
-          ...exercise,
-          sets: exercise.sets || null,
-          reps: exercise.reps || null,
-        }))
-      );
-    } catch (error) {
-      console.error('Error fetching exercises:', error);
-    }
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   useEffect(() => {
-    fetchSavedExercises();
-  }, [userId]);
+    if (user) {
+      // Sort the weights array by date in ascending order
+      const sortedWeights = (user.weights || [])
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  const handleChange = (index, field, value) => {
-    const updatedData = [...routineData];
-    updatedData[index][field] = value;
-    setRoutineData(updatedData);
+      setWeights({
+        goalWeight: user.goal_weight || 0,
+        allWeights: sortedWeights || [],
+        currentWeight:
+          sortedWeights.length > 0
+            ? sortedWeights[sortedWeights.length - 1].weight
+            : 0,
+      });
+    }
+  }, [user]);
+
+  const handleButtonClick = (type) => {
+    setShowInputs((prev) => ({ ...prev, [type]: true }));
   };
 
-  const handleSubmit = async () => {
+  const handleCancel = (type) => {
+    setShowInputs((prev) => ({
+      ...prev,
+      [type === 'goalWeight' ? 'goal' : 'current']: false,
+    }));
+  };
+
+  const handleAddDateWeight = async (date, weight) => {
     try {
-      await axios.patch(`/api/users/${userId}/saved-exercises`, {
-        exercises: routineData,
+      const newWeight = { weight, date: date.toISOString() };
+      // Check if the weight for the specific date already exists
+      const weightExists = weights.allWeights.some((entry) => dayjs(entry.date).isSame(date, 'day'));
+
+      // Update weights array based on existence check
+      const updatedWeights = weightExists
+        ? weights.allWeights.map((entry) => (dayjs(entry.date).isSame(date, 'day')
+          ? newWeight
+          : entry))
+        : [...weights.allWeights, newWeight];
+
+      // Sort the updated weights by date
+      const sortedWeights = updatedWeights
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Send updated weights to the backend
+      await axios.patch(`/api/users/${user._id}/weights`, {
+        weights: sortedWeights,
       });
-      alert('Routine updated successfully!');
-      fetchSavedExercises();
+
+      setWeights((prev) => ({
+        ...prev,
+        allWeights: updatedWeights,
+        currentWeight: updatedWeights[updatedWeights.length - 1].weight,
+      }));
+
+      const formattedDate = dayjs(date).format('MMMM D, YYYY');
+      setSnackbarMessage(`Added weight: ${weight} lbs. for ${formattedDate}`);
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
     } catch (error) {
-      console.error('Error updating routine:', error);
-      alert('Failed to update routine.');
+      setSnackbarMessage('Failed to add weight.');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
     }
   };
 
-  const handleDeleteExercise = async (exerciseId) => {
+  const updateGoalWeight = async (newGoalWeight) => {
     try {
-      await axios.delete(`/api/users/${userId}/saved-exercises/${exerciseId}`);
+      await axios.patch(`/api/users/${user._id}`, {
+        goal_weight: newGoalWeight,
+      });
 
-      alert('Exercise deleted successfully!');
-      fetchSavedExercises();
+      setWeights((prev) => ({ ...prev, goalWeight: newGoalWeight }));
+      setSnackbarMessage('Adjusted goal weight.');
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
     } catch (error) {
-      console.error('Error deleting exercise:', error);
-      alert('Failed to delete exercise.');
+      setSnackbarMessage('Failed to update goal weight.');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
     }
   };
 
   return (
     <div>
-      <Typography variant="h4" gutterBottom align="center">
-        My Workout Routine
-      </Typography>
-      <Grid container spacing={2} justify="center">
-        {routineData.map((exercise, index) => (
-          <Grid item xs={12} sm={6} md={4} key={exercise._id}>
-            <Card sx={{ height: '100%' }}>
-              <CardContent>
-                <Typography variant="h5">{exercise.name}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {`Muscle: ${exercise.muscle.charAt(0).toUpperCase() + exercise.muscle.slice(1)}`}
-                </Typography>
-                <TextField
-                  type="number"
-                  label="Sets"
-                  value={exercise.sets || ''}
-                  onChange={(e) => handleChange(index, 'sets', e.target.value)}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  type="number"
-                  label="Reps"
-                  value={exercise.reps || ''}
-                  onChange={(e) => handleChange(index, 'reps', e.target.value)}
-                  fullWidth
-                  margin="normal"
-                />
-              </CardContent>
-              <CardActions>
-                <IconButton
-                  aria-label="delete"
-                  color="error"
-                  onClick={() => handleDeleteExercise(exercise._id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-        sx={{ mt: 3 }}
+      <Grid2
+        container
+        spacing={2}
+        sx={{ mt: 3, justifyContent: 'center', alignItems: 'center' }}
       >
-        Save Routine
-      </Button>
+        {/* Goal Weight Card */}
+        <WeightCard
+          userId={user._id}
+          title='Goal Weight'
+          weight={weights.goalWeight}
+          showInput={showInputs.goal}
+          onButtonClick={() => handleButtonClick('goal')}
+          onCancel={() => handleCancel('goalWeight')}
+          inputLabel='Goal Weight'
+          onGoalWeightUpdate={updateGoalWeight}
+        />
+        {/* Current Weight Card */}
+        <WeightCard
+          userId={user._id}
+          title='Current Weight'
+          weight={weights.currentWeight}
+          showInput={showInputs.current}
+          onButtonClick={() => handleButtonClick('current')}
+          onCancel={() => handleCancel('currentWeight')}
+          inputLabel='Current Weight'
+          isCurrentWeightCard
+          onAddDateWeight={handleAddDateWeight}
+        />
+      </Grid2>
+      <Chart weights={weights.allWeights} goalWeight={weights.goalWeight} />
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
 
-export default Routines;
+export default Sleep;

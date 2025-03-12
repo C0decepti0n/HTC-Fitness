@@ -5,9 +5,8 @@ import axios from 'axios'
 const ReminderCard = ()=>{
 // set state to store reminders
 const [ reminders, setReminders] = useState([]);
+
 // set new reminders 
-
-
 const[newReminders, setNewReminders] = useState({
   title: '',
   description: '',
@@ -16,26 +15,67 @@ const[newReminders, setNewReminders] = useState({
 });
 
 
+//mounts fetched reminders 
+useEffect(()=>{
+  getReminders();
+}, [])
 
 //axios get request 
 const getReminders = ()=>{
-
+axios.get('/reminders')
+.then((response)=>{
+setReminders(response.data)
+})
+.catch((err)=>{
+  console.error("Can not get all reminders:", err)
+})
 }
 //axios Post
  const postReminders = () =>{
+axios.post('/reminders'),{
+  title: newReminders.title,
+  description: newReminders.description,
+  date: newReminders.date
+}
+.then(()=>{
 
+  setReminders([...reminders, response.data])
+  setNewReminders({
+    title: '',
+    description: '',
+    date: ''
+  
+  })
+})
+.catch((err)=>{
+console.error("Can not create reminder:", err)
+})
  }
 
 
 // axios request to update
 const updateReminder = () =>{
+axios.patch('/')
+.then(()=>{
+  
+})
+.catch((err)=>{
+  console.error(err)
 
+})
 }
 
 
 // axios DELETE reminder
 const deleteReminder = () =>{
+axios.delete('/')
+.then(()=>{
+  
+})
+.catch((err)=>{
+  console.error(err)
 
+})
 }
 
 return (

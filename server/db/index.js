@@ -45,9 +45,10 @@ const sleepSchema = new mongoose.Schema({
   hours_slept: Number,
   sleep_aid: String,
   disturbances: Number,
-  notes: String,
+  disturbance_notes: String,
   begin_sleep: Date,
   stop_sleep: Date,
+  user_id: Number,
 });
 
 const userSchema = new mongoose.Schema({
@@ -58,10 +59,10 @@ const userSchema = new mongoose.Schema({
   goal_weight: Number,
   weights: [weightSchema],
   saved_exercises: [SavedExerciseSchema],
-  sleep: [sleepSchema],
 });
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 const User = mongoose.model('User', userSchema);
+const Sleep = mongoose.model('Sleep', sleepSchema);
 
-module.exports = { Exercise, User };
+module.exports = { Exercise, User, Sleep };

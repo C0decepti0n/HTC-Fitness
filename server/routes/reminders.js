@@ -31,3 +31,17 @@ router.post('/', (res,req)=>{
 
 
 
+//UPDATE
+router.patch('/', (res,req)=>{
+  Reminder.findByIdAndUpdate(req.params.id, req.body)
+  .then(()=>{
+
+  })
+  .catch ((err)=>{
+    console.error('Failure to update reminder:', err)
+    res.sendStatus(500)
+  })
+})
+
+
+

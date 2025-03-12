@@ -15,3 +15,19 @@ res.sendStatus(500)
 })
 })
 
+
+//POST: create new reminders
+router.post('/', (res,req)=>{
+  
+  Reminder.create(req.body)
+  .then(()=>{
+    res.sendStatus(201)
+  })
+  .catch(()=>{
+    console.error('Failure to create reminder:', err)
+    res.sendStatus(500);
+  })
+})
+
+
+

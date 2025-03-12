@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 // Exercise schema
 const exerciseSchema = new mongoose.Schema({
   name: String,
@@ -38,5 +37,6 @@ const userSchema = new mongoose.Schema({
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 const User = mongoose.model('User', userSchema);
+app.use('/api/routines', routinesRouter);
 
 module.exports = { Exercise, User };

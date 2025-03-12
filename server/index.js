@@ -9,6 +9,8 @@ const dotenv = require('dotenv');
 const exercisesRouter = require('./routes/exercises');
 const usersRouter = require('./routes/users');
 const { User } = require('./db');
+//update routes
+const routinesRouter = require('./server/routes/routines.js');
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -131,6 +133,8 @@ app.post('/logout', (req, res) => {
 
 app.use('/api/exercises', exercisesRouter);
 app.use('/api/users', usersRouter);
+// new route update
+app.use('/api/routines', routinesRouter);
 
 app.get('/login', (req, res) => {
   res.sendFile(path.resolve(DIST_DIR, 'index.html'));

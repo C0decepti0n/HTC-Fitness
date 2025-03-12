@@ -38,7 +38,7 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-// Initialize Passport
+// Initialize Passport for google
 app.use(passport.initialize());
 app.use(passport.session());
 

@@ -85,7 +85,18 @@ return (
     <h2>Reminders</h2>
   <div>
 {reminders.map((reminder)=> {
-<div></div>
+<div key={reminder._id}>
+<h3>{reminder.title}</h3>
+<p>{reminder.description}</p>
+<p>{new Date(reminder.date).toLocaleString()}</p>
+<button onClick={()=>updateReminder(reminder._id, {completed: true})}>Completed!</button>
+<button></button>
+
+
+
+
+
+</div>
 })}
 
   </div>

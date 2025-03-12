@@ -11,10 +11,11 @@ const reminderSchema = new mongoose.Schema({
   },
     date:{
       type:Date,
-      reuqired: true
+      required: true
     },
     completed:{
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     // createdAt:{
     // }, 
@@ -23,4 +24,4 @@ const reminderSchema = new mongoose.Schema({
 });
 const Reminder = mongoose.model('Reminder', reminderSchema);
 
- module.exports = reminderSchema;
+ module.exports = { Reminder };

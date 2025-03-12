@@ -1,10 +1,10 @@
 const express = require('express');
-const { Reminder } = require('../db/index');
+const { Reminder } = require('../db/Reminder');
 
 const router = express.Router();
 
 // GET: fetch all reminders in the database
-router.get('/', (res, req)=>{
+router.get('/', (req, res)=>{
 Reminder.find({})
 .then((reminders)=>{
 res.status(200).send(reminders)
@@ -17,13 +17,13 @@ res.sendStatus(500)
 
 
 //POST: create new reminders
-router.post('/', (res,req)=>{
+router.post('/', (req, res)=>{
   
   Reminder.create(req.body)
   .then(()=>{
     res.sendStatus(201)
   })
-  .catch(()=>{
+  .catch((err)=>{
     console.error('Failure to create reminder:', err)
     res.sendStatus(500);
   })
@@ -32,10 +32,14 @@ router.post('/', (res,req)=>{
 
 
 //UPDATE
-router.patch('/', (res,req)=>{
+router.patch('/:id', (req, res)=>{
   Reminder.findByIdAndUpdate(req.params.id, req.body)
-  .then(()=>{
-
+  .then((updateReminder)=>{
+    if(updateReminder){
+      res.status(200).send(updateReminder)
+    }else{
+      res.sendStatus(404)
+    }
   })
   .catch ((err)=>{
     console.error('Failure to update reminder:', err)
@@ -46,8 +50,8 @@ router.patch('/', (res,req)=>{
 
 
 //DELETE
-router.delete('/', (res,req)=>{
-  Reminder.findByIdAndUpDelete(req.params.id)
+router.delete('/:id', (req, res)=>{
+  Reminder.findByIdAndDelete(req.params.id)
   .then((delReminder)=>{
     if(delReminder){
       res.sendStatus(200)
@@ -62,3 +66,4 @@ router.delete('/', (res,req)=>{
     res.sendStatus(500)
   })
 })
+module.exports = router;

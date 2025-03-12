@@ -8,7 +8,12 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const exercisesRouter = require('./routes/exercises');
 const usersRouter = require('./routes/users');
+const remindersRouter = require('./routes/reminders'); 
 const { User } = require('./db');
+
+// const { Reminder } = require('./db');
+
+
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -131,6 +136,8 @@ app.post('/logout', (req, res) => {
 
 app.use('/api/exercises', exercisesRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/reminders', remindersRouter);
+
 
 app.get('/login', (req, res) => {
   res.sendFile(path.resolve(DIST_DIR, 'index.html'));

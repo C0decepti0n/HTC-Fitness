@@ -5,6 +5,8 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
+import { AppProvider } from '@toolpad/core/AppProvider';
+import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -15,12 +17,15 @@ import NavBar from './NavBar.jsx';
 import HomePage from './HomePage.jsx';
 import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
+import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
+
 
 const lightTheme = createTheme({
   palette: {
     mode: 'light',
     background: {
+
       default: 'white',
     },
   },
@@ -43,6 +48,9 @@ const App = () => {
   const [exercises, setExercises] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [open, setOpen] = useState(false);
+  const handleDrawerOpen = () => setOpen(true);
+  const handleDrawerClose = () => setOpen(false);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -87,6 +95,7 @@ const App = () => {
   };
 
   return (
+    <AppProvider>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -96,11 +105,13 @@ const App = () => {
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
             <Route path="/" element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
+                
                 <HomePage
                   user={userProfile}
                   exercises={exercises}
                   fetchRandomExercises={fetchRandomExercises}
                 />
+                
               </ProtectedRoute>
             } />
             <Route path="/routines" element={
@@ -113,11 +124,16 @@ const App = () => {
                 <Goals user={userProfile}/>
               </ProtectedRoute>
             } />
+            <Route path="/sleep" element={
+              <ProtectedRoute>
+                <Sleep user={userProfile}/>
+              </ProtectedRoute>
+            } />
           </Routes>
         </Router>
       </ThemeProvider>
     </LocalizationProvider>
-
+    </AppProvider>
   );
 };
 

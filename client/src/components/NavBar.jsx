@@ -25,9 +25,10 @@ import MoonIcon  from '@mui/icons-material/BedtimeOutlined';
 import AlertIcon  from '@mui/icons-material/AddAlert'; 
 import FitnessIcon  from '@mui/icons-material/FitnessCenter';
 import TipsIcon  from '@mui/icons-material/TipsAndUpdates';
-// import DrawerLeft from './DrawerLeft'
+import LogoutIcon from '@mui/icons-material/LogoutSharp';
+import DashboardIcon from '@mui/icons-material/DashBoard';
+import GoalsIcon from '@mui/icons-material/EmojiEvents';
 
-// import { styled } from '@mui/material/styles';
 import axios from 'axios';
 
 const drawerWidth = 240;
@@ -49,8 +50,6 @@ const CustomTextField = styled(TextField)({
 
 const NavBar = ({ setIsAuthenticated }) => {
   const [searchInput, setSearchInput] = useState('');
-  const location = useLocation();
-  const navigate = useNavigate();
   const isRoutines = location.pathname === '/routines';
   const [open, setOpen] = useState(false);
 
@@ -76,29 +75,6 @@ const NavBar = ({ setIsAuthenticated }) => {
         console.error('Error logging out', error);
       });
   };
-  // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
-  //   ({ theme }) => ({
-  //     flexGrow: 1,
-  //     padding: theme.spacing(3),
-  //     transition: theme.transitions.create('margin', {
-  //       easing: theme.transitions.easing.sharp,
-  //       duration: theme.transitions.duration.leavingScreen,
-  //     }),
-  //     marginLeft: `-${drawerWidth}px`,
-  //     variants: [
-  //       {
-  //         props: ({ open }) => open,
-  //         style: {
-  //           transition: theme.transitions.create('margin', {
-  //             easing: theme.transitions.easing.easeOut,
-  //             duration: theme.transitions.duration.enteringScreen,
-  //           }),
-  //           marginLeft: 0,
-  //         },
-  //       },
-  //     ],
-  //   }),
-  // );
 
   const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -185,6 +161,16 @@ const NavBar = ({ setIsAuthenticated }) => {
         </DrawerHeader>
         <Divider />
         <List>
+          {/* dashboard/home  */}
+          <ListItem key={'dashboard'} disablePadding>
+            <ListItemButton component={Link} to="/">
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Dashboard'} />
+            </ListItemButton>
+          </ListItem>
+        {/* profile  */}
           <ListItem key={'profile'} disablePadding>
              {/* // TODO link route  */}
             <ListItemButton>
@@ -194,24 +180,10 @@ const NavBar = ({ setIsAuthenticated }) => {
               <ListItemText primary={'Profile'} />
             </ListItemButton>
           </ListItem>
-          <ListItem key={'tips'} disablePadding>
-            {/* // TODO link route  */}
-            <ListItemButton>
-              <ListItemIcon>
-                <TipsIcon />
-              </ListItemIcon>
-              <ListItemText primary={'Tips'} />
-            </ListItemButton>
-          </ListItem>
-          <ListItem key={'reminders'} disablePadding>
-            {/* // TODO link route  */}
-            <ListItemButton>
-              <ListItemIcon>
-                <AlertIcon />
-              </ListItemIcon>
-              <ListItemText primary={'Reminders'} />
-            </ListItemButton>
-          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          {/* routines  */}
           <ListItem key={'routines'} disablePadding>
             <ListItemButton component={Link} to="/routines">
               <ListItemIcon>
@@ -220,15 +192,36 @@ const NavBar = ({ setIsAuthenticated }) => {
               <ListItemText primary={'Routines'} />
             </ListItemButton>
           </ListItem>
+          {/* tips */}
+          <ListItem key={'tips'} disablePadding>
+            {/* // TODO link Tips route  */}
+            <ListItemButton>
+              <ListItemIcon>
+                <TipsIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Tips'} />
+            </ListItemButton>
+          </ListItem>
+          {/* reminders  */}
+          <ListItem key={'reminders'} disablePadding>
+            {/* // TODO link Reminders route  */}
+            <ListItemButton>
+              <ListItemIcon>
+                <AlertIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Reminders'} />
+            </ListItemButton>
+          </ListItem>
+          {/* goals  */}
           <ListItem key={'goals'} disablePadding>
             <ListItemButton component={Link} to="/goals">
               <ListItemIcon>
-                {/* // TODO change icon  */}
-                <FitnessIcon />
+                <GoalsIcon />
               </ListItemIcon>
               <ListItemText primary={'Goals'} />
             </ListItemButton>
           </ListItem>
+          {/* sleep  */}
           <ListItem key={'sleep-tracker'} disablePadding>
             {/* // TODO link route  */}
             <ListItemButton>
@@ -241,15 +234,15 @@ const NavBar = ({ setIsAuthenticated }) => {
         </List>
         <Divider />
         <List>
-        <ListItem key={'logout'} disablePadding>
-            <ListItemButton onClick={handleLogout}>
-              <ListItemIcon>
-                {/* // TODO change icon  */}
-                <MoonIcon />
-              </ListItemIcon>
-              <ListItemText primary={'Logout'} />
-            </ListItemButton>
-          </ListItem>
+        {/* logout */}
+          <ListItem key={'logout'} disablePadding>
+              <ListItemButton onClick={handleLogout}>
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText primary={'Logout'} />
+              </ListItemButton>
+            </ListItem>
         </List>
       </Drawer>
 </Box>

@@ -9,11 +9,15 @@ const dotenv = require('dotenv');
 const exercisesRouter = require('./routes/exercises');
 const usersRouter = require('./routes/users');
 const { User } = require('./db');
+
+
+
 //update routes
-const routinesRouter = require('./server/routes/routines.js');
+const routinesRouter = require('./routes/Routine.js');
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
+
 });
 
 const PORT = 3000;

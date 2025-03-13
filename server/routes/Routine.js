@@ -1,22 +1,10 @@
-// server/models/Routine.js
+
 const mongoose = require('mongoose');
-
-const RoutineSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  exercise: { type: String, required: true },
-  muscle: { type: String, required: true },
-  sets: { type: Number, required: true },
-  reps: { type: Number, required: true },
-  weight: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now },
-});
-
-module.exports = mongoose.model('Routine', RoutineSchema);
-
-// server/routes/routines.js
 const express = require('express');
-const Routine = require('../models/Routine');
+
+
 const router = express.Router();
+
 
 // GET all routines for a user
 router.get('/:userId', async (req, res) => {

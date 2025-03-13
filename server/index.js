@@ -11,8 +11,14 @@ const usersRouter = require('./routes/users');
 const sleepRouter = require('./routes/sleep');
 const { User } = require('./db');
 
+
+
+//update routes
+const routinesRouter = require('./routes/Routine.js');
+
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
+
 });
 
 const PORT = 3000;
@@ -37,7 +43,7 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-// Initialize Passport
+// Initialize Passport for google
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -133,7 +139,9 @@ app.post('/logout', (req, res) => {
 // Use routers
 app.use('/api/exercises', exercisesRouter);
 app.use('/api/users', usersRouter);
+// New routers
 app.use('/api/sleep', sleepRouter);
+app.use('/api/routines', routinesRouter);
 
 app.get('/login', (req, res) => {
   res.sendFile(path.resolve(DIST_DIR, 'index.html'));

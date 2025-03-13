@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const exercisesRouter = require('./routes/exercises');
 const usersRouter = require('./routes/users');
+const sleepRouter = require('./routes/sleep');
 const remindersRouter = require('./routes/reminders'); 
 const { User } = require('./db');
 
@@ -141,11 +142,12 @@ app.post('/logout', (req, res) => {
   });
 });
 
+// Use routers
 app.use('/api/exercises', exercisesRouter);
 app.use('/api/users', usersRouter);
-
+// New routers
+app.use('/api/sleep', sleepRouter);
 app.use('/api/reminders', remindersRouter);
-
 app.use('/api/routines', routinesRouter);
 
 app.get('/login', (req, res) => {

@@ -126,7 +126,7 @@ const App = () => {
             } />
             <Route path="/sleep" element={
               <ProtectedRoute>
-                <Goals user={userProfile}/>
+                <Sleep user={userProfile}/>
               </ProtectedRoute>
             } />
           </Routes>

@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+//update
+const RoutineSchema = require('./routineSchema');
+
 
 // Exercise schema
 const exerciseSchema = new mongoose.Schema({
@@ -39,4 +42,4 @@ const userSchema = new mongoose.Schema({
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 const User = mongoose.model('User', userSchema);
 
-module.exports = { Exercise, User };
+module.exports = { Exercise, User, RoutineSchema };

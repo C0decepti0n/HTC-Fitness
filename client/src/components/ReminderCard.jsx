@@ -37,7 +37,8 @@ setReminders(response.data)
 axios.post('/reminders'),{
   title: newReminders.title,
   description: newReminders.description,
-  date: newReminders.date
+  date: newReminders.date,
+  user:userId,
 }
 .then(()=>{
 
@@ -46,7 +47,7 @@ axios.post('/reminders'),{
     title: '',
     description: '',
     date: ''
-  
+  //userId:????
   })
 })
 .catch((err)=>{
@@ -56,7 +57,7 @@ console.error("Can not create reminder:", err)
 
 
 // axios request to update
-const updateReminder = (id, updatedReminder) =>{
+const updateReminders = (id, updatedReminder) =>{
 axios.patch(`/reminders/${id}`, updatedReminder)
 .then(()=>{
   getReminders();
@@ -69,7 +70,7 @@ axios.patch(`/reminders/${id}`, updatedReminder)
 
 
 // axios DELETE reminder
-const deleteReminder = (id) =>{
+const deleteReminders = (id) =>{
 axios.delete(`/reminders/${id}`)
 .then(()=>{
   getReminders();
@@ -89,16 +90,22 @@ return (
 <h3>{reminder.title}</h3>
 <p>{reminder.description}</p>
 <p>{new Date(reminder.date).toLocaleString()}</p>
-<button onClick={()=>updateReminder(reminder._id, {completed: true})}>Completed!</button>
-<button></button>
-
-
-
-
+<button onClick={()=>updateReminders(reminder._id, {completed: true})}>Completed!</button>
+<button onClick={()=>deleteReminders(reminder._id)}>Delete</button>
 
 </div>
 })}
 
+  </div>
+
+
+
+  <div>
+    <h3>Create New Reminder</h3>
+    <input></input>
+    <input></input>
+    <input></input>
+  <button onClick={postReminders}>Create Reminder</button>
   </div>
   </div>
 )

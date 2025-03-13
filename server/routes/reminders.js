@@ -4,7 +4,7 @@ const { Reminder } = require('../db/Reminder');
 const router = express.Router();
 
 // GET: fetch all reminders in the database
-router.get('/', (req, res)=>{
+router.get('/:userId', (req, res)=>{
 Reminder.find({})
 .then((reminders)=>{
 res.status(200).send(reminders)

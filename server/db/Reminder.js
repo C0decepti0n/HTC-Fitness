@@ -17,11 +17,13 @@ const reminderSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
-    // createdAt:{
-    // }, 
-    
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User', // Reference to User model
+      required: true
+    }
   
 });
 const Reminder = mongoose.model('Reminder', reminderSchema);
 
- module.exports = { Reminder };
+ module.exports = {Reminder};

@@ -147,8 +147,14 @@ app.post('/logout', (req, res) => {
     });
 });
 
+<<<<<<< HEAD
 // Use routers
 // Routes
+=======
+
+// Routes
+
+>>>>>>> c06906fb04cf9ac58008a29a92f01d03f5b83c6d
 app.use('/api/exercises', exercisesRouter);
 app.use('/api/users', usersRouter);
 // New routers

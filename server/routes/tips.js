@@ -93,6 +93,6 @@ router.delete('/:userId', async (req, res) => {
   }
 });
 
-//comment
+//comments
 module.exports = router;
 

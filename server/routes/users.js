@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const express = require('express');
 const { User } = require('../db/index');
-//define expreess router
+
 const router = express.Router();
 
 // Get all stored users

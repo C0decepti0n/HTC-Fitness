@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
+<<<<<<< HEAD
 const TipSchema = require('./tipSchema');
+=======
+//update
+const RoutineSchema = require('./routineSchema');
+
+>>>>>>> bac222a463c1ecd940df2ef47a4c68f0bcebcc2a
 
 // Exercise schema
 const exerciseSchema = new mongoose.Schema({
@@ -40,4 +46,8 @@ const userSchema = new mongoose.Schema({
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 const User = mongoose.model('User', userSchema);
 
+<<<<<<< HEAD
 module.exports = { Exercise, User, TipSchema };
+=======
+module.exports = { Exercise, User, RoutineSchema };
+>>>>>>> bac222a463c1ecd940df2ef47a4c68f0bcebcc2a

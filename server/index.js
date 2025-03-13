@@ -16,12 +16,8 @@ const { User } = require('./db');
 const routinesRouter = require('./routes/Routine.js');
 
 dotenv.config({
-<<<<<<< HEAD
-    path: path.resolve(__dirname, '../.env')
-=======
   path: path.resolve(__dirname, '../.env'),
 
->>>>>>> bac222a463c1ecd940df2ef47a4c68f0bcebcc2a
 });
 
 const PORT = 3000;

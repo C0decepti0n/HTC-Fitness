@@ -14,10 +14,12 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import axios from 'axios';
 
 import NavBar from './NavBar.jsx';
+import DrawerLeft from './DrawerLeft.jsx'
 import HomePage from './HomePage.jsx';
 import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
 import Login from './Login.jsx';
+
 
 const lightTheme = createTheme({
   palette: {
@@ -46,6 +48,9 @@ const App = () => {
   const [exercises, setExercises] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [open, setOpen] = useState(false);
+  const handleDrawerOpen = () => setOpen(true);
+  const handleDrawerClose = () => setOpen(false);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -100,6 +105,7 @@ const App = () => {
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
             <Route path="/" element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
+                {/* <DrawerLeft /> */}
                 
                 <HomePage
                   user={userProfile}

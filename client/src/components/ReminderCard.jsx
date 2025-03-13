@@ -81,6 +81,12 @@ axios.delete(`/reminders/${id}`)
 })
 }
 
+
+
+
+
+
+
 return (
   <div>
     <h2>Reminders</h2>
@@ -102,9 +108,29 @@ return (
 
   <div>
     <h3>Create New Reminder</h3>
-    <input></input>
-    <input></input>
-    <input></input>
+    <input
+    type='text'
+    name='title'
+    placeholder='Ttitle'
+    value={newReminders.title}
+    //onChange={}
+    />
+    <input 
+    type='text'
+    name='description'
+    placeholder='Description'
+    value={newReminders.description}
+    //onChange={}
+
+    />
+    <input
+    type='datetime-local'
+    name='date'
+    placeholder='Description'
+    value={newReminders.date}
+      //onChange={}
+
+    />
   <button onClick={postReminders}>Create Reminder</button>
   </div>
   </div>

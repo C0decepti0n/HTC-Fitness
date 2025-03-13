@@ -44,7 +44,7 @@ const users = [
   {
     _id: 2,
     googleId: 'plo2',
-    nameFirst: 'Bob',
+    nameFirst: 'aaa',
     nameLast: 'Ross',
     email: 'bungholio@beavis',
     goal_weight: 69,
@@ -54,7 +54,7 @@ const users = [
   {
     _id: 3,
     googleId: 'plo3',
-    nameFirst: 'Bob',
+    nameFirst: 'tut',
     nameLast: 'Ross',
     email: 'bungholio@beavis',
     goal_weight: 69,

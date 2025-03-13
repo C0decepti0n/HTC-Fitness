@@ -100,13 +100,13 @@ const App = () => {
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
             <Route path="/" element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <DashboardLayout>
+                
                 <HomePage
                   user={userProfile}
                   exercises={exercises}
                   fetchRandomExercises={fetchRandomExercises}
                 />
-                </DashboardLayout>
+                
               </ProtectedRoute>
             } />
             <Route path="/routines" element={

@@ -163,7 +163,7 @@ const NavBar = ({ setIsAuthenticated }) => {
         <List>
           {/* dashboard/home  */}
           <ListItem key={'dashboard'} disablePadding>
-            <ListItemButton component={Link} to="/">
+            <ListItemButton component={Link} to="/" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>
@@ -173,7 +173,7 @@ const NavBar = ({ setIsAuthenticated }) => {
         {/* profile  */}
           <ListItem key={'profile'} disablePadding>
              {/* // TODO link route  */}
-            <ListItemButton>
+            <ListItemButton onClick={handleDrawerClose} >
               <ListItemIcon>
                 <ProfileIcon />
               </ListItemIcon>
@@ -185,7 +185,7 @@ const NavBar = ({ setIsAuthenticated }) => {
         <List>
           {/* routines  */}
           <ListItem key={'routines'} disablePadding>
-            <ListItemButton component={Link} to="/routines">
+            <ListItemButton component={Link} to="/routines" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <FitnessIcon />
               </ListItemIcon>
@@ -195,7 +195,7 @@ const NavBar = ({ setIsAuthenticated }) => {
           {/* tips */}
           <ListItem key={'tips'} disablePadding>
             {/* // TODO link Tips route  */}
-            <ListItemButton>
+            <ListItemButton onClick={handleDrawerClose}>
               <ListItemIcon>
                 <TipsIcon />
               </ListItemIcon>
@@ -205,7 +205,7 @@ const NavBar = ({ setIsAuthenticated }) => {
           {/* reminders  */}
           <ListItem key={'reminders'} disablePadding>
             {/* // TODO link Reminders route  */}
-            <ListItemButton>
+            <ListItemButton onClick={handleDrawerClose}>
               <ListItemIcon>
                 <AlertIcon />
               </ListItemIcon>
@@ -214,7 +214,7 @@ const NavBar = ({ setIsAuthenticated }) => {
           </ListItem>
           {/* goals  */}
           <ListItem key={'goals'} disablePadding>
-            <ListItemButton component={Link} to="/goals">
+            <ListItemButton component={Link} to="/goals" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <GoalsIcon />
               </ListItemIcon>
@@ -224,7 +224,7 @@ const NavBar = ({ setIsAuthenticated }) => {
           {/* sleep  */}
           <ListItem key={'sleep-tracker'} disablePadding>
             {/* // TODO link route  */}
-            <ListItemButton>
+            <ListItemButton component={Link} to="/sleep" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <MoonIcon />
               </ListItemIcon>

@@ -14,7 +14,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import axios from 'axios';
 
 import NavBar from './NavBar.jsx';
-import DrawerLeft from './DrawerLeft.jsx'
 import HomePage from './HomePage.jsx';
 import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
@@ -105,7 +104,6 @@ const App = () => {
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
             <Route path="/" element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
-                {/* <DrawerLeft /> */}
                 
                 <HomePage
                   user={userProfile}
@@ -121,6 +119,11 @@ const App = () => {
               </ProtectedRoute>
             } />
             <Route path="/goals" element={
+              <ProtectedRoute>
+                <Goals user={userProfile}/>
+              </ProtectedRoute>
+            } />
+            <Route path="/sleep" element={
               <ProtectedRoute>
                 <Goals user={userProfile}/>
               </ProtectedRoute>

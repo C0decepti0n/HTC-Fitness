@@ -8,17 +8,19 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const exercisesRouter = require('./routes/exercises');
 const usersRouter = require('./routes/users');
+const sleepRouter = require('./routes/sleep');
 const remindersRouter = require('./routes/reminders'); 
 const { User } = require('./db');
+
 
 // const { Reminder } = require('./db');
 
 
 
 
-
 //update routes
 const routinesRouter = require('./routes/Routine.js');
+
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -140,11 +142,12 @@ app.post('/logout', (req, res) => {
   });
 });
 
+// Use routers
 app.use('/api/exercises', exercisesRouter);
 app.use('/api/users', usersRouter);
+// New routers
+app.use('/api/sleep', sleepRouter);
 app.use('/api/reminders', remindersRouter);
-
-// new route update
 app.use('/api/routines', routinesRouter);
 
 app.get('/login', (req, res) => {

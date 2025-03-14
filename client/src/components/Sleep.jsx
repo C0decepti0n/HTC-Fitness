@@ -27,17 +27,19 @@ const Sleep = ({ user }) => {
   const [sleepRecords, setSleepRecords] = useState([]);
   const [sleepRecord, setSleepRecord] = useState({});
 
+  console.log(user);
+
   // TEMPORARY TESTING MUI
   function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
   }
   let currentDay = new Date().toLocaleDateString();
   const rows = [
-    createData(currentDay, 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
+    createData(currentDay, 8.1, 5.5, 0, 'none'),
+    createData(currentDay, 4, 9, 0, 4.3),
+    createData(currentDay, 9, 10, 0, 6.0),
+    createData(currentDay, 20, 8, 0, 4.3),
+    createData(currentDay, 7, 8, 0, 3.9),
   ];
 
   return (
@@ -47,11 +49,14 @@ const Sleep = ({ user }) => {
         <Table sx={{ minWidth: 650 }} aria-label="sleep records">
           <TableHead>
             <TableRow>
-              <TableCell>Dessert (100g serving)</TableCell>
-              <TableCell align="right">Calories</TableCell>
-              <TableCell align="right">Fat&nbsp;(g)</TableCell>
-              <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-              <TableCell align="right">Protein&nbsp;(g)</TableCell>
+              <TableCell>Day</TableCell>
+              <TableCell align="right">Hours Slept</TableCell>
+              <TableCell align="right">Hours Goal</TableCell>
+              <TableCell align="right">Disturbances</TableCell>
+              <TableCell align="right">Disturbance Notes</TableCell>
+              <TableCell align="right">Sleep Aid Used</TableCell>
+              <TableCell align="right">Sleep Starting Time</TableCell>
+              <TableCell align="right">Sleep Ending Time</TableCell>
               <TableCell align="right">Sleep Rating</TableCell>
             </TableRow>
           </TableHead>
@@ -93,7 +98,7 @@ const Sleep = ({ user }) => {
         emptyIcon={<Circle fontSize="inherit" />}
         readOnly
       />
-      <div>hey look, you found me ;]</div>
+      <div>emotional support V1 for programmers ;]</div>
       <img src="https://i.etsystatic.com/48285043/r/il/38bfed/5614526251/il_600x600.5614526251_36m9.jpg" />
     </div>
   );

@@ -11,7 +11,7 @@ const sleepSchema = new mongoose.Schema({
   day: Date,
   begin_sleep: Date,
   stop_sleep: Date,
-  user_id: Number,
+  user_id: String,
 });
 
 module.exports = sleepSchema;

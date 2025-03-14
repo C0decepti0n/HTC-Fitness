@@ -5,7 +5,6 @@ import {
   Grid2,
   Typography,
 } from '@mui/material';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import ExerciseCard from './ExerciseCard.jsx';
 
 const HomePage = ({ user, exercises, fetchRandomExercises }) => {

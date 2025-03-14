@@ -36,6 +36,13 @@
   ## Routines Page
     - Any exercises saved can have reps and sets added to them
 
+  ## Sleep Tracker Page
+    - Start and stop a timer to track how many hours and minutes you slept for.
+    - Starting time is set to 10 minutes after you clicked the start button while ending time is set to 10 minutes before you clicked. This is to account for the fact it takes time to logout of the app, login to the app, go to sleep, and get out of bed.
+    - Add an amount of hours to aim for when you sleep.
+    - It can additionally record the day you slept on, any sleep disturbances you had, and any items you used to help you sleep.
+    - Each sleep session is given a rating based on how close your hours slept are to your goal of hours to sleep.
+
 # Tech Stack
   - Api: API Ninjas [Docs](https://api-ninjas.com/api/exercises)
   - Frontend: React [Docs](https://react.dev/)

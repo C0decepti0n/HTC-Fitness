@@ -20,31 +20,36 @@ router.get('/:userId', async (req, res) => {
 
     // get the sleep records associated with the user
     const sleepRecords = await Sleep.find({ user_id: userId });
-
+    
     // send back the user's sleep records
-    res.status(200).send(sleepRecords);
+    res.status(200).json(sleepRecords);
   } catch (error) {
     console.error('Error fetching user sleep records:', error);
-    res.status(500).send('Error fetching user sleep records');
+    res.status(500).json('Error fetching user sleep records');
   }
 });
 
 // POST a new sleep record to the db
-router.post('/', async (req, res) => {
-  const { sleepRecord } = req.body;
+router.post('/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const sleepRecord = req.body;
 
   try {
     // reject request if the given user id is invalid
-    const user = await User.findById(sleepRecord.user_id);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    // add the user id onto the sleepRecord object before it is used to make a new sleep record
+    sleepRecord.user_id = userId;
 
     // create new sleep record
     const newSleepRecord = await Sleep.create(sleepRecord);
 
     res.json({ message: 'Sleep record saved successfully', newSleepRecord });
   } catch (error) {
+    console.error('Error saving sleep record:', error);
     res.status(500).json({ message: 'Error saving sleep record', error });
   }
 });
@@ -66,7 +71,7 @@ router.patch('/:userId/:sleepId', async (req, res) => {
 
     res.status(200).json({ message: 'Sleep record updated successfully', updatedSleepRecord });
   } catch (error) {
-    console.error(error);
+    console.error('Error updating sleep record:', error);
     res.status(500).json({ message: 'Error updating sleep record', error });
   }
 });
@@ -86,7 +91,7 @@ router.delete('/:userId/:sleepId', async (req, res) => {
 
     res.status(200).json({ message: 'Sleep record deleted successfully', deletedSleepRecord });
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting sleep record:', error);
     res.status(500).json({ message: 'Error deleting sleep record', error });
   }
 });

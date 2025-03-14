@@ -125,12 +125,12 @@ Sleep.insertMany(sleepRecords)
     mongoose.connection.close();
   });
 
-User.insertMany(users)
-  .then(() => {
-    console.log('Users inserted successfully!');
-    // mongoose.connection.close();
-  })
-  .catch((err) => {
-    console.error('Error inserting users:', err);
-    mongoose.connection.close();
-  });
+// User.insertMany(users)
+//   .then(() => {
+//     console.log('Users inserted successfully!');
+//     // mongoose.connection.close();
+//   })
+//   .catch((err) => {
+//     console.error('Error inserting users:', err);
+//     mongoose.connection.close();
+//   });

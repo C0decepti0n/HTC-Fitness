@@ -10,6 +10,8 @@ const exercisesRouter = require('./routes/exercises');
 const usersRouter = require('./routes/users');
 const sleepRouter = require('./routes/sleep');
 const remindersRouter = require('./routes/reminders'); 
+//update routes
+const routinesRouter = require('./routes/Routine');
 const { User } = require('./db');
 
 
@@ -18,8 +20,6 @@ const { User } = require('./db');
 
 
 
-//update routes
-const routinesRouter = require('./routes/Routine.js');
 
 
 dotenv.config({

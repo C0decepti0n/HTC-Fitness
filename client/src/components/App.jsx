@@ -5,8 +5,6 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { AppProvider } from '@toolpad/core/AppProvider';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -95,7 +93,6 @@ const App = () => {
   };
 
   return (
-    <AppProvider>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -133,7 +130,6 @@ const App = () => {
         </Router>
       </ThemeProvider>
     </LocalizationProvider>
-    </AppProvider>
   );
 };
 

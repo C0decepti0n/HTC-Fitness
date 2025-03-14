@@ -21,6 +21,7 @@ import Login from './Login.jsx';
 import Tips from './TipsPopup.jsx'
 import Reminders from './ReminderCard.jsx'
 import Settings from './Settings.jsx'
+import Profile from './Profile.jsx'
 
 const lightTheme = createTheme({
   palette: {
@@ -140,6 +141,11 @@ const App = () => {
             <Route path="/settings" element={
               <ProtectedRoute>
                 <Settings user={userProfile}/>
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile user={userProfile}/>
               </ProtectedRoute>
             } />
           </Routes>

@@ -172,9 +172,8 @@ const NavBar = ({ setIsAuthenticated }) => {
             </ListItemButton>
           </ListItem>
         {/* profile  */}
-          <ListItem key={'profile'} disablePadding>
-             {/* // TODO link route  */}
-            <ListItemButton onClick={handleDrawerClose} >
+          <ListItem key={'profile'} disablePadding>      
+            <ListItemButton component={Link} to="/profile" onClick={handleDrawerClose} >
               <ListItemIcon>
                 <ProfileIcon />
               </ListItemIcon>
@@ -204,7 +203,6 @@ const NavBar = ({ setIsAuthenticated }) => {
           </ListItem>
           {/* tips */}
           <ListItem key={'tips'} disablePadding>
-            {/* // TODO link Tips route  */}
             <ListItemButton component={Link} to="/tips" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <TipsIcon />
@@ -214,7 +212,6 @@ const NavBar = ({ setIsAuthenticated }) => {
           </ListItem>
           {/* reminders  */}
           <ListItem key={'reminders'} disablePadding>
-            {/* // TODO link Reminders route  */}
             <ListItemButton component={Link} to="/reminders" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <AlertIcon />
@@ -233,7 +230,6 @@ const NavBar = ({ setIsAuthenticated }) => {
           </ListItem>
           {/* sleep  */}
           <ListItem key={'sleep-tracker'} disablePadding>
-            {/* // TODO link route  */}
             <ListItemButton component={Link} to="/sleep" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <MoonIcon />

@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-
+import React, {useState, useEffect} from 'react';
+import axios from 'axios'
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,15 +12,41 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 
-const Profile = () => {
+const Profile = ({ user }) => {
+  console.log(user)
+  // mount user profile
+  useEffect(() => {
+    getProfile();
+  }, [])
+  // set profile state
+  const [profile, setProfile] = useState([]);
+
   
+  // axios get request
+  const getProfile = () => {
+    axios.get('/settings')
+    .then((response) => {
+      setProfile(response.data)
+    })
+    .catch((err) => {
+      console.log('Failed to find user data', err)
+    })
+  }
+
+  const fillProfile = () => {
+
+  }
+
   const [gender, setGender]= useState('');
 
   const saveName = (event) => {
-    // save to preferred name in settings
+    
+    const prefName = (event.target.value);
+    // axios.patch('/settings/')
   }
 
   const handleChange = (event) => {
+    
     setGender(event.target.value);
   };
 

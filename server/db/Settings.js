@@ -1,12 +1,9 @@
 const mongoose = require ('mongoose');
-//reminder schema
+
 const settingsSchema = new mongoose.Schema({
+  preferredName: String,
   dashboard: Array,
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Reference to User model
-    required: true
-  }
+  user_id: String
 });
 const Settings = mongoose.model('Settings', settingsSchema);
 

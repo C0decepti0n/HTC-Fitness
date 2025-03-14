@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import {
   AppBar,
@@ -51,9 +51,10 @@ const CustomTextField = styled(TextField)({
 
 const NavBar = ({ setIsAuthenticated }) => {
   const [searchInput, setSearchInput] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
   const isRoutines = location.pathname === '/routines';
   const [open, setOpen] = useState(false);
-
 
   const handleSearch = () => {
     console.log('Searching for', searchInput);
@@ -98,7 +99,7 @@ const NavBar = ({ setIsAuthenticated }) => {
 
   return (
     <Box sx={{ display: 'flex' }}> 
-    <AppBar position="flex" sx={{ backgroundColor: '#1A237E' }}>
+    <AppBar position="relative" sx={{ backgroundColor: '#1A237E' }}>
         <Toolbar>
           <IconButton
             color="inherit"

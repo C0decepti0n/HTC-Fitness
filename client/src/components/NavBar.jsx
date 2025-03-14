@@ -195,7 +195,7 @@ const NavBar = ({ setIsAuthenticated }) => {
           {/* tips */}
           <ListItem key={'tips'} disablePadding>
             {/* // TODO link Tips route  */}
-            <ListItemButton onClick={handleDrawerClose}>
+            <ListItemButton component={Link} to="/tips" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <TipsIcon />
               </ListItemIcon>

@@ -19,7 +19,7 @@ import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
 import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
-
+import Tips from './TipsPopup.jsx';
 
 const lightTheme = createTheme({
   palette: {
@@ -127,6 +127,11 @@ const App = () => {
             <Route path="/sleep" element={
               <ProtectedRoute>
                 <Sleep user={userProfile}/>
+              </ProtectedRoute>
+            } />
+             <Route path="/tips" element={
+              <ProtectedRoute>
+                <Tips user={userProfile}/>
               </ProtectedRoute>
             } />
           </Routes>

@@ -156,7 +156,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/sleep', sleepRouter);
 app.use('/api/reminders', remindersRouter);
 app.use('/api/routines', routinesRouter);
-app.use('api/settings', settingsRouter);
+app.use('/api/settings', settingsRouter);
 
 app.get('/login', (req, res) => {
     res.sendFile(path.resolve(DIST_DIR, 'index.html'));

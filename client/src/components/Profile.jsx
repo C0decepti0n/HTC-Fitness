@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 
 const Profile = ({ user }) => {
-  console.log(user)
+  console.log(user._id)
   // mount user profile
   useEffect(() => {
     getProfile();
@@ -21,10 +21,10 @@ const Profile = ({ user }) => {
   // set profile state
   const [profile, setProfile] = useState([]);
 
-  
+
   // axios get request
   const getProfile = () => {
-    axios.get('/settings')
+    axios.get(`/${user._id}`)
     .then((response) => {
       setProfile(response.data)
     })

@@ -1,13 +1,20 @@
 const express = require('express');
-const { Reminder } = require('../db/Reminder');
+const { Reminder } = require('../db/index');
 
 const router = express.Router();
 
 // GET: fetch all reminders in the database
 router.get('/:userId', (req, res) => {
-  Reminder.find({})
+  const { userId } = req.params;
+  console.log('Received userId:', userId);  // Debug log
+
+  Reminder.find({userId})
     .then((reminders) => {
-      res.status(200).send(reminders);
+      if (reminders.length > 0) {
+        res.status(200).send(reminders);
+      } else {
+        res.status(404).send('No reminders found for this user.');
+      }
     })
     .catch((err) => {
       console.error('Failure to find reminders:', err);

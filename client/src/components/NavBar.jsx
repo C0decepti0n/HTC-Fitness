@@ -26,7 +26,7 @@ import AlertIcon  from '@mui/icons-material/AddAlert';
 import FitnessIcon  from '@mui/icons-material/FitnessCenter';
 import TipsIcon  from '@mui/icons-material/TipsAndUpdates';
 import LogoutIcon from '@mui/icons-material/LogoutSharp';
-import DashboardIcon from '@mui/icons-material/DashBoard';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import GoalsIcon from '@mui/icons-material/EmojiEvents';
 
 import axios from 'axios';
@@ -205,7 +205,8 @@ const NavBar = ({ setIsAuthenticated }) => {
           {/* reminders  */}
           <ListItem key={'reminders'} disablePadding>
             {/* // TODO link Reminders route  */}
-            <ListItemButton onClick={handleDrawerClose}>
+
+            <ListItemButton component={Link} to="/reminders" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <AlertIcon />
               </ListItemIcon>

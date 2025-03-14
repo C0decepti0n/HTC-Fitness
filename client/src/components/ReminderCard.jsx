@@ -1,42 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Card, CardContent, Typography, Button, Box, TextField } from '@mui/material';
 
-const ReminderCard = () => {
+
+const ReminderCard = ({users}) => {
   // set state to store reminders
   const [reminders, setReminders] = useState([]);
   // edit reminders
-  // const [editReminders, setEditReminders] = useEffect();
+  //  const [editReminders, setEditReminders] = useState(null);
   // set new reminders
   const [newReminders, setNewReminders] = useState({
     title: '',
     description: '',
     date: '',
   });
+  
+  //handle input change for the new reminders
+  const handleInputChange = (e) =>{
+    setNewReminders({
+  ...newReminders,
+  [e.target.name]: e.target.value
+    })
+  }
+
 
   // axios get request
-  const getReminders = () => {
+  const getReminders = (userId) => {
+
     axios
-      .get('/reminders')
+      .get(`/reminders/${userId}`)
       .then((response) => {
+        // console.log('Fetched reminders:', response.data);
         setReminders(response.data);
+
       })
       .catch((err) => {
         console.error('Can not get all reminders:', err);
       });
   };
+
+
+
   // mounts fetched reminders
   useEffect(() => {
+   
     getReminders();
-  }, []);
+  
+}, []);
 
   // axios Post
   const postReminders = () => {
+    if(!user?._id){
+      (console.log(user._id, 'user'))
+      console.error('User id is required');
+      return;
+    }
     axios
       .post('/reminders', {
         title: newReminders.title,
         description: newReminders.description,
         date: newReminders.date,
-        // user: userId,
+         userId: user._id,
       })
       .then((response) => {
         setReminders([...reminders, response.data]);
@@ -44,7 +68,6 @@ const ReminderCard = () => {
           title: '',
           description: '',
           date: '',
-          // userId:????
         });
       })
       .catch((err) => {
@@ -68,66 +91,95 @@ const ReminderCard = () => {
     axios
       .delete(`/reminders/${id}`)
       .then(() => {
-        getReminders();
+        setReminders(reminders.filter((reminder) => reminder._id !== id)); // Remove deleted reminder from the state
       })
       .catch((err) => {
         console.error(err);
       });
   };
 
-  // handle input change for the new reminders
-  // const handleInputChange = (e){
-  //   setNewReminders((previousState)=>{
-  // ...
-  //   })
-  // }
-
+  
   return (
-    <div>
-      <h2>Reminders</h2>
-      <div>
-        {reminders.map((reminder) => (
-            <div key={reminder.id}>
-              <h3>{reminder.title}</h3>
-              <p>{reminder.description}</p>
-              <p>{new Date(reminder.date).toLocaleString()}</p>
-              <button
-                onClick={() => updateReminders(reminder.id, { completed: true })}
-              >
-                Completed!
-              </button>
-              <button onClick={() => deleteReminders(reminder.id)}>
-                Delete
-              </button>
-            </div>
-        ))}
-      </div>
 
-      <div>
-        <h3>Create New Reminder</h3>
-        <input
-          type='text'
-          name='title'
-          placeholder='Title'
+    <Box>
+    <Typography variant="h4" gutterBottom>
+      My Reminders
+    </Typography>
+
+    {/* Display reminders or show message if empty */}
+    {reminders.length === 0 ? (
+      <Typography>No reminders to display</Typography>
+    ) : (
+      reminders.map((reminder) => (
+        <Card key={reminder._id} sx={{ marginBottom: 2 }}>
+          <CardContent>
+            <Typography variant="h6">{reminder.title}</Typography>
+            <Typography variant="body2" color="textSecondary">
+              {reminder.description}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {new Date(reminder.date).toLocaleString()}
+            </Typography>
+            <Box mt={2}>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => console.log('Mark as completed')}
+                sx={{ marginRight: 1 }}
+              >
+                Complete
+              </Button>
+              
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => deleteReminders(reminder._id)} // Delete the reminder
+                sx={{ marginTop: 2, marginBottom: 1 }}
+
+              >
+                Delete
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      ))
+    )}
+
+
+
+
+
+<Box mt={4}>
+        <Typography variant="h6">Create New Reminder</Typography>
+        <TextField
+          label="Title"
+          variant="outlined"
+          fullWidth
           value={newReminders.title}
-          // onChange={handleInputChange}
+          onChange={handleInputChange}
+          name="title"
         />
-        <input
-          type='text'
-          name='description'
-          placeholder='Description'
+        <TextField
+          label="Description"
+          variant="outlined"
+          fullWidth
           value={newReminders.description}
-          // onChange={handleInputChange}
+          onChange={handleInputChange}
+          name="description"
+          multiline
         />
-        <input
-          type='datetime-local'
-          name='date'
+        <TextField
+          label="Date"
+          variant="outlined"
+          fullWidth
           value={newReminders.date}
-          // onChange={handleInputChange}
+          onChange={handleInputChange}
+          name="date"
+          type="datetime-local"
         />
-        <button onClick={postReminders}>Create Reminder</button>
-      </div>
-    </div>
+        <Button variant="contained" onClick={postReminders}>Create Reminder</Button>
+      </Box>
+    </Box>
   );
 };
 

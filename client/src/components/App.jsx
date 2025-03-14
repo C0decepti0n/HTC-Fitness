@@ -19,6 +19,7 @@ import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
 import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
+import Reminders from './ReminderCard.jsx';
 
 
 const lightTheme = createTheme({
@@ -129,7 +130,16 @@ const App = () => {
                 <Sleep user={userProfile}/>
               </ProtectedRoute>
             } />
-          </Routes>
+         
+         <Route path="/reminders" element={
+              <ProtectedRoute>
+                <Reminders user={userProfile}/>
+              </ProtectedRoute>
+            } />
+         
+         
+         
+          </Routes> 
         </Router>
       </ThemeProvider>
     </LocalizationProvider>

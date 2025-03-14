@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import {
   AppBar,
@@ -28,6 +28,7 @@ import TipsIcon  from '@mui/icons-material/TipsAndUpdates';
 import LogoutIcon from '@mui/icons-material/LogoutSharp';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GoalsIcon from '@mui/icons-material/EmojiEvents';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import axios from 'axios';
 
@@ -180,6 +181,15 @@ const NavBar = ({ setIsAuthenticated }) => {
               <ListItemText primary={'Profile'} />
             </ListItemButton>
           </ListItem>
+        {/* settings  */}
+          <ListItem key={'settings'} disablePadding>
+            <ListItemButton component={Link} to="/settings" onClick={handleDrawerClose} >
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Settings'} />
+            </ListItemButton>
+          </ListItem>
         </List>
         <Divider />
         <List>
@@ -195,7 +205,7 @@ const NavBar = ({ setIsAuthenticated }) => {
           {/* tips */}
           <ListItem key={'tips'} disablePadding>
             {/* // TODO link Tips route  */}
-            <ListItemButton onClick={handleDrawerClose}>
+            <ListItemButton component={Link} to="/tips" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <TipsIcon />
               </ListItemIcon>
@@ -205,7 +215,7 @@ const NavBar = ({ setIsAuthenticated }) => {
           {/* reminders  */}
           <ListItem key={'reminders'} disablePadding>
             {/* // TODO link Reminders route  */}
-            <ListItemButton onClick={handleDrawerClose}>
+            <ListItemButton component={Link} to="/reminders" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <AlertIcon />
               </ListItemIcon>

@@ -24,9 +24,9 @@ const Profile = ({ user }) => {
 
   // axios get request
   const getProfile = () => {
-    axios.get(`/${user._id}`)
+    axios.get(`/api/settings/${user._id}`)
     .then((response) => {
-      setProfile(response.data)
+      console.log(response.data)
     })
     .catch((err) => {
       console.log('Failed to find user data', err)

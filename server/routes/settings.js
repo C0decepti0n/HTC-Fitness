@@ -12,7 +12,7 @@ router.get('/:userId', async (req, res) => {
 
   try {
 
-    const settings = await Settings.findById({ user_id: userId });
+    const settings = await Settings.find({ user_id: userId });
     console.log('Settings found:', settings);  // Log the settings
     // send back the user's sleep records
     res.status(200).json(settings);

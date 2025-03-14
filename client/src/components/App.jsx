@@ -5,8 +5,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { AppProvider } from '@toolpad/core/AppProvider';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
+
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -19,7 +18,9 @@ import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
 import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
-
+import Tips from './TipsPopup.jsx'
+import Reminders from './ReminderCard.jsx'
+import Settings from './Settings.jsx'
 
 const lightTheme = createTheme({
   palette: {
@@ -48,9 +49,7 @@ const App = () => {
   const [exercises, setExercises] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
-  const [open, setOpen] = useState(false);
-  const handleDrawerOpen = () => setOpen(true);
-  const handleDrawerClose = () => setOpen(false);
+  
 
   useEffect(() => {
     // Check if user is authenticated
@@ -95,7 +94,6 @@ const App = () => {
   };
 
   return (
-    <AppProvider>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -129,11 +127,25 @@ const App = () => {
                 <Sleep user={userProfile}/>
               </ProtectedRoute>
             } />
+            <Route path="/tips" element={
+              <ProtectedRoute>
+                <Tips user={userProfile}/>
+              </ProtectedRoute>
+            } />
+            <Route path="/reminders" element={
+              <ProtectedRoute>
+                <Reminders user={userProfile}/>
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings user={userProfile}/>
+              </ProtectedRoute>
+            } />
           </Routes>
         </Router>
       </ThemeProvider>
     </LocalizationProvider>
-    </AppProvider>
   );
 };
 

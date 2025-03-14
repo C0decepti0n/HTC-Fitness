@@ -17,7 +17,6 @@
     "@mui/material-nextjs": "^6.4.3",
     "@mui/x-charts": "^7.15.0",
     "@mui/x-date-pickers": "^7.16.0",
-    "@toolpad/core": "^0.13.0",
     "axios": "^1.7.5",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",

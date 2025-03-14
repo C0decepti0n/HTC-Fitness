@@ -10,7 +10,11 @@ const exercisesRouter = require('./routes/exercises');
 const usersRouter = require('./routes/users');
 const sleepRouter = require('./routes/sleep');
 const remindersRouter = require('./routes/reminders'); 
+
+const tipsRouter = require('./routes/tips');
+
 const settingsRouter = require('./routes/settings');
+
 const { User } = require('./db');
 
 // const { Reminder } = require('./db');
@@ -147,16 +151,19 @@ app.post('/logout', (req, res) => {
     });
 });
 
-
+// Use routers
 // Routes
-
 app.use('/api/exercises', exercisesRouter);
 app.use('/api/users', usersRouter);
 // New routers
 app.use('/api/sleep', sleepRouter);
 app.use('/api/reminders', remindersRouter);
 app.use('/api/routines', routinesRouter);
+
+app.use('/api/tips', tipsRouter);
+=======
 app.use('/api/settings', settingsRouter);
+
 
 app.get('/login', (req, res) => {
     res.sendFile(path.resolve(DIST_DIR, 'index.html'));

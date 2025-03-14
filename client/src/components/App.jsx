@@ -18,10 +18,12 @@ import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
 import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
-import Tips from './TipsPopup.jsx'
+
+import Tips from './TipsPopup.jsx';
 import Reminders from './ReminderCard.jsx'
 import Settings from './Settings.jsx'
 import Profile from './Profile.jsx'
+
 
 const lightTheme = createTheme({
   palette: {
@@ -128,11 +130,16 @@ const App = () => {
                 <Sleep user={userProfile}/>
               </ProtectedRoute>
             } />
+
+//              <Route path="/tips" element={
+
             <Route path="/tips" element={
+
               <ProtectedRoute>
                 <Tips user={userProfile}/>
               </ProtectedRoute>
             } />
+
             <Route path="/reminders" element={
               <ProtectedRoute>
                 <Reminders user={userProfile}/>
@@ -148,6 +155,7 @@ const App = () => {
                 <Profile user={userProfile}/>
               </ProtectedRoute>
             } />
+
           </Routes>
         </Router>
       </ThemeProvider>

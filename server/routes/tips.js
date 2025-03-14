@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const express = require('express');
-const { User, Tip } = require('../db/index'); 
-
+const { User, Tips } = require('../db/index'); 
+// change Tip to Tips line 22 example
 const router = express.Router();
 
 
@@ -9,7 +9,7 @@ router.get('/:userId', async (req, res) => {
     const { userId } = req.params;
 
     try {
-        // Check if user exists
+        // check if the user exists
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -19,7 +19,7 @@ router.get('/:userId', async (req, res) => {
         const { gender, intensity = 3 } = user; 
 
         // retrieve tips based on gender and intensity
-        const tipEntry = await Tip.findOne({ gender, intensity });
+        const tipEntry = await Tips.findOne({ gender, intensity });
 
         if (!tipEntry) {
             return res.status(404).json({ message: 'No tips found for this user' });
@@ -32,19 +32,19 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
-// ✅ POST new tips for a user
+// POST new tips for a user
 router.post('/', async (req, res) => {
     const { userId, gender, intensity, tips } = req.body;
 
     try {
-        // Validate user existence
+        // validate that user existence
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Create new tip entry
-        const newTip = new Tip({ userId, gender, intensity, tips });
+        // create new tip entry
+        const newTip = new Tips({ userId, gender, intensity, tips });
         await newTip.save();
 
         res.status(201).json({ message: 'Tips added successfully!', newTip });
@@ -54,19 +54,19 @@ router.post('/', async (req, res) => {
     }
 });
 
-// ✅ PATCH (update) a user's tips
+// PATCH a user's tips
 router.patch('/:userId', async (req, res) => {
     const { userId } = req.params;
     const { gender, intensity, tips } = req.body;
 
     try {
-        // Validate user existence
+        // validate that user existence
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Find and update tip entry
+        // find and update tip entry
         const updatedTip = await Tip.findOneAndUpdate(
             { userId, gender, intensity },
             { tips },
@@ -80,18 +80,18 @@ router.patch('/:userId', async (req, res) => {
     }
 });
 
-// ✅ DELETE tips for a user
+// DELETE tips for a user
 router.delete('/:userId/:tipId', async (req, res) => {
     const { userId, tipId } = req.params;
 
     try {
-        // Validate user existence
+        // validate that user existence
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Delete the tip entry
+        // delete the tip entry
         const deletedTip = await Tip.findByIdAndDelete(tipId);
 
         if (!deletedTip) {

@@ -4,39 +4,35 @@ import axios from 'axios';
 
 const TipsPopup = ({ userId }) => {
     const [tips, setTips] = useState([]);
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const [intensity, setIntensity] = useState(3); // Default intensity
 
-    // Ensure userId is defined before fetching tips
+   
     useEffect(() => {
         if (userId) {
             fetchTips();
-            const interval = setInterval(() => {
-                setOpen(true);
-            }, 60000 * 60); // Show popup every hour
-            return () => clearInterval(interval);
         }
     }, [userId]);
 
-    // Fetch tips based on userId
+    // ✅ Replaced fetchTips function with the one from your screenshot
     const fetchTips = async () => {
-        if (!userId) {
-            console.error("No userId available.");
-            return;
-        }
-        console.log(`Fetching tips for userId: ${userId}`);
-        
         try {
+            console.log("Fetching tips for userId:", userId);
+
+            if (!userId || userId.length !== 24) {
+                console.error("Invalid userId passed:", userId);
+                return;
+            }
+
             const response = await axios.get(`/api/tips/${userId}`);
-            console.log("Fetched tips:", response.data);
+            console.log("API Response:", response.data);
+
             setTips(response.data.tips || []);
-            setIntensity(response.data.intensity || 3); // Sync intensity with backend
         } catch (error) {
             console.error('Error fetching tips:', error);
         }
     };
 
-    // Handle intensity change
     const handleIntensityChange = async (event) => {
         const newIntensity = event.target.value;
         setIntensity(newIntensity);
@@ -48,7 +44,6 @@ const TipsPopup = ({ userId }) => {
         }
     };
 
-    // Handle deleting the tips feature
     const handleDeleteFeature = async () => {
         try {
             await axios.delete(`/api/tips/${userId}`);
@@ -62,7 +57,7 @@ const TipsPopup = ({ userId }) => {
     return (
         <Dialog open={open} onClose={() => setOpen(false)}>
             <Box p={3} textAlign='center'>
-                <Typography variant='h6'>Daily Workout & Life Tips</Typography>
+                <Typography variant='h6'>Daily Workout Tips</Typography>
                 {tips.length > 0 ? (
                     tips.map((tip, index) => (
                         <Typography key={index} variant='body1'>{tip}</Typography>

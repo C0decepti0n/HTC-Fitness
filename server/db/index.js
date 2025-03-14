@@ -2,7 +2,12 @@ const mongoose = require('mongoose');
 // New schemas
 const sleepSchema = require('./sleep');
 const RoutineSchema = require('./routineSchema');
+
 const TipsSchema = require('./Tips')
+
+const settingsSchema = require('./Settings');
+
+
 // Exercise schema
 const exerciseSchema = new mongoose.Schema({
   name: String,
@@ -42,5 +47,11 @@ const userSchema = new mongoose.Schema({
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 const User = mongoose.model('User', userSchema);
 const Sleep = mongoose.model('Sleep', sleepSchema);
+
 const Tips = mongoose.model('Tip', TipsSchema);
 module.exports = { Exercise, User, Sleep, RoutineSchema, Tips };
+
+const Settings = mongoose.model('Settings', settingsSchema)
+
+module.exports = { Exercise, User, Sleep, RoutineSchema, Settings };
+

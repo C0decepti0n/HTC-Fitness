@@ -78,7 +78,7 @@ const Routines = ({ userId }) => {
 
   return (
     <div>
-      {/* Page title and total weight lifted summary */}
+      {/* Page title & total weight lifted summary */}
       <Typography variant="h4" gutterBottom align="center">
         My Workout Routine
       </Typography>

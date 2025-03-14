@@ -161,7 +161,7 @@ app.use('/api/reminders', remindersRouter);
 app.use('/api/routines', routinesRouter);
 
 app.use('/api/tips', tipsRouter);
-=======
+
 app.use('/api/settings', settingsRouter);
 
 

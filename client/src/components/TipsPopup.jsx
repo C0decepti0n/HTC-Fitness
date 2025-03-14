@@ -14,7 +14,7 @@ const TipsPopup = ({ userId }) => {
         }
     }, [userId]);
 
-    // ✅ Replaced fetchTips function with the one from your screenshot
+    
     const fetchTips = async () => {
         try {
             console.log("Fetching tips for userId:", userId);

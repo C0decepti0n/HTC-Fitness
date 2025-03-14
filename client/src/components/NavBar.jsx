@@ -28,6 +28,7 @@ import TipsIcon  from '@mui/icons-material/TipsAndUpdates';
 import LogoutIcon from '@mui/icons-material/LogoutSharp';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GoalsIcon from '@mui/icons-material/EmojiEvents';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import axios from 'axios';
 
@@ -50,9 +51,10 @@ const CustomTextField = styled(TextField)({
 
 const NavBar = ({ setIsAuthenticated }) => {
   const [searchInput, setSearchInput] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
   const isRoutines = location.pathname === '/routines';
   const [open, setOpen] = useState(false);
-
 
   const handleSearch = () => {
     console.log('Searching for', searchInput);
@@ -97,7 +99,7 @@ const NavBar = ({ setIsAuthenticated }) => {
 
   return (
     <Box sx={{ display: 'flex' }}> 
-    <AppBar position="flex" sx={{ backgroundColor: '#1A237E' }}>
+    <AppBar position="relative" sx={{ backgroundColor: '#1A237E' }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -171,13 +173,21 @@ const NavBar = ({ setIsAuthenticated }) => {
             </ListItemButton>
           </ListItem>
         {/* profile  */}
-          <ListItem key={'profile'} disablePadding>
-             {/* // TODO link route  */}
-            <ListItemButton onClick={handleDrawerClose} >
+          <ListItem key={'profile'} disablePadding>      
+            <ListItemButton component={Link} to="/profile" onClick={handleDrawerClose} >
               <ListItemIcon>
                 <ProfileIcon />
               </ListItemIcon>
               <ListItemText primary={'Profile'} />
+            </ListItemButton>
+          </ListItem>
+        {/* settings  */}
+          <ListItem key={'settings'} disablePadding>
+            <ListItemButton component={Link} to="/settings" onClick={handleDrawerClose} >
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Settings'} />
             </ListItemButton>
           </ListItem>
         </List>
@@ -194,8 +204,10 @@ const NavBar = ({ setIsAuthenticated }) => {
           </ListItem>
           {/* tips */}
           <ListItem key={'tips'} disablePadding>
+
             {/* // TODO link Tips route  */}
-            <ListItemButton onClick={handleDrawerClose}>
+
+            <ListItemButton component={Link} to="/tips" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <TipsIcon />
               </ListItemIcon>
@@ -204,8 +216,7 @@ const NavBar = ({ setIsAuthenticated }) => {
           </ListItem>
           {/* reminders  */}
           <ListItem key={'reminders'} disablePadding>
-            {/* // TODO link Reminders route  */}
-            <ListItemButton onClick={handleDrawerClose}>
+            <ListItemButton component={Link} to="/reminders" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <AlertIcon />
               </ListItemIcon>
@@ -223,7 +234,6 @@ const NavBar = ({ setIsAuthenticated }) => {
           </ListItem>
           {/* sleep  */}
           <ListItem key={'sleep-tracker'} disablePadding>
-            {/* // TODO link route  */}
             <ListItemButton component={Link} to="/sleep" onClick={handleDrawerClose}>
               <ListItemIcon>
                 <MoonIcon />

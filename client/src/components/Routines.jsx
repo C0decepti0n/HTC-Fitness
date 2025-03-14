@@ -64,7 +64,7 @@ const Routines = ({ userId }) => {
     }
   };
 
-  // handle deleting an exercise from the routine
+  // handle deleting an exercise from a routine
   const handleDeleteExercise = async (exerciseId) => {
     try {
       await axios.delete(`/api/routines/${exerciseId}`);

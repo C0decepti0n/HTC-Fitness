@@ -22,7 +22,7 @@ router.get('/:userId', async (req, res) => {
     const sleepRecords = await Sleep.find({ user_id: userId });
     
     // send back the user's sleep records
-    res.status(200).json(sleepRecords);
+    res.status(200).json({ message: 'Sleep records obtained successfully', data: sleepRecords });
   } catch (error) {
     console.error('Error fetching user sleep records:', error);
     res.status(500).json('Error fetching user sleep records');
@@ -47,7 +47,7 @@ router.post('/:userId', async (req, res) => {
     // create new sleep record
     const newSleepRecord = await Sleep.create(sleepRecord);
 
-    res.json({ message: 'Sleep record saved successfully', newSleepRecord });
+    res.json({ message: 'Sleep record saved successfully', data: newSleepRecord });
   } catch (error) {
     console.error('Error saving sleep record:', error);
     res.status(500).json({ message: 'Error saving sleep record', error });
@@ -57,7 +57,7 @@ router.post('/:userId', async (req, res) => {
 // PATCH (update) a sleep record
 router.patch('/:userId/:sleepId', async (req, res) => {
   const { userId, sleepId } = req.params;
-  const { sleepRecord } = req.body;
+  const sleepRecord = req.body;
 
   try {
     // reject request if the given user id is invalid
@@ -67,9 +67,14 @@ router.patch('/:userId/:sleepId', async (req, res) => {
     }
 
     // update the correct sleep record
-    const updatedSleepRecord = await Sleep.findByIdAndUpdate(sleepId, sleepRecord);
+    const oldSleepRecord = await Sleep.findByIdAndUpdate(sleepId, sleepRecord);
 
-    res.status(200).json({ message: 'Sleep record updated successfully', updatedSleepRecord });
+    // if the findByIdAndUpdate method failed to find a record to update, send back 404 status and message saying that the sleep record couldn't be found
+    if (!oldSleepRecord) {
+      return res.status(404).json({ message: 'Sleep record to update not found' })
+    }
+
+    res.status(200).json({ message: 'Sleep record updated successfully', data: oldSleepRecord });
   } catch (error) {
     console.error('Error updating sleep record:', error);
     res.status(500).json({ message: 'Error updating sleep record', error });
@@ -89,7 +94,12 @@ router.delete('/:userId/:sleepId', async (req, res) => {
     // delete the correct sleep record
     const deletedSleepRecord = await Sleep.findByIdAndDelete(sleepId);
 
-    res.status(200).json({ message: 'Sleep record deleted successfully', deletedSleepRecord });
+    // if the findByIdAndDelete method failed to find a record to delete, send back 404 status and message saying that the sleep record couldn't be found
+    if (!deletedSleepRecord) {
+      return res.status(404).json({ message: 'Sleep record to delete not found' })
+    }
+
+    res.status(200).json({ message: 'Sleep record deleted successfully', data: deletedSleepRecord });
   } catch (error) {
     console.error('Error deleting sleep record:', error);
     res.status(500).json({ message: 'Error deleting sleep record', error });

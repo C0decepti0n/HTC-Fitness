@@ -130,16 +130,11 @@ const App = () => {
                 <Sleep user={userProfile}/>
               </ProtectedRoute>
             } />
-
-//              <Route path="/tips" element={
-
-            <Route path="/tips" element={
-
+            <Route path="/tips" element= {
               <ProtectedRoute>
                 <Tips user={userProfile}/>
               </ProtectedRoute>
             } />
-
             <Route path="/reminders" element={
               <ProtectedRoute>
                 <Reminders user={userProfile}/>
@@ -155,7 +150,6 @@ const App = () => {
                 <Profile user={userProfile}/>
               </ProtectedRoute>
             } />
-
           </Routes>
         </Router>
       </ThemeProvider>

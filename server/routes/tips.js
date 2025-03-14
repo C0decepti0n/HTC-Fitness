@@ -67,7 +67,7 @@ router.patch('/:userId', async (req, res) => {
         }
 
         // find and update tip entry
-        const updatedTip = await Tip.findOneAndUpdate(
+        const updatedTip = await Tips.findOneAndUpdate(
             { userId, gender, intensity },
             { tips },
             { new: true, upsert: true }
@@ -92,7 +92,7 @@ router.delete('/:userId/:tipId', async (req, res) => {
         }
 
         // delete the tip entry
-        const deletedTip = await Tip.findByIdAndDelete(tipId);
+        const deletedTip = await Tips.findByIdAndDelete(tipId);
 
         if (!deletedTip) {
             return res.status(404).json({ message: 'No tips found to delete' });

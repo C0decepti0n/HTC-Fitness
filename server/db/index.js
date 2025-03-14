@@ -50,6 +50,6 @@ const Sleep = mongoose.model('Sleep', sleepSchema);
 const Settings = mongoose.model('Settings', settingsSchema)
 const Tips = mongoose.model('Tip', TipsSchema);
 
-module.exports = { Exercise, User, Sleep, RoutineSchema, Tips };
+module.exports = { Exercise, User, Sleep, RoutineSchema, Tips, Settings };
 
 

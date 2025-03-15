@@ -8,46 +8,49 @@ import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid2 from '@mui/material/Grid2';
+import Grid from '@mui/system/Grid'
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 
 const Profile = ({ user }) => {
-  console.log(user._id)
-  // mount user profile
+  
+  //* States *//
+  // const [profile, setProfile] = useState([]); // not sure if needed
+  const [gender, setGender]= useState('');
+  // state about intensity
+  
+
+  // Call fetch request on page load
   useEffect(() => {
     getProfile();
   }, [])
-  // set profile state
-  const [profile, setProfile] = useState([]);
 
-
-  // axios get request
+  //* GET profile 
   const getProfile = () => {
-    axios.get(`/${user._id}`)
+    axios.get(`/api/tips/${user._id}`)
     .then((response) => {
-      setProfile(response.data)
+      
+      setGender = response.data[0].gender;
+
     })
     .catch((err) => {
       console.log('Failed to find user data', err)
     })
   }
 
+  //* Fill Profile from get *//
   const fillProfile = () => {
 
   }
 
-  const [gender, setGender]= useState('');
-
-  const saveName = (event) => {
-    
-    const prefName = (event.target.value);
-    // axios.patch('/settings/')
-  }
+  
+  //* Patch  
+ 
 
   const handleChange = (event) => {
-    
-    setGender(event.target.value);
+    //change intensity
+    // intensity (event.target.value);
   };
 
   return (
@@ -55,7 +58,8 @@ const Profile = ({ user }) => {
       <Typography>
         User Profile
       </Typography>
-      <TextField id="preferredName" label="Preferred Name" variant="outlined" onChange={saveName} />
+      {/* Add something about intensity */}
+      {/* Option to disable tips check box */}
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
         <InputLabel id="gender">Gender</InputLabel>
         <Select
@@ -67,7 +71,7 @@ const Profile = ({ user }) => {
         >
           <MenuItem value={'male'}>Male</MenuItem>
           <MenuItem value={'female'}>Female</MenuItem>
-          <MenuItem value={'non-binary'}>Non-Binary</MenuItem>
+         
         </Select>
       </FormControl>
     </Paper>

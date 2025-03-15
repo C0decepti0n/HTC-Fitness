@@ -1,7 +1,7 @@
 
 const mongoose = require('mongoose');
 const express = require('express');
-
+const {Routines} = require('../db/index')
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ const router = express.Router();
 // GET all routines for a user
 router.get('/:userId', async (req, res) => {
   try {
-    const routines = await Routine.find({ userId: req.params.userId });
+    const routines = await Routines.find({ userId: req.params.userId });
     res.json(routines);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching routines', error });
@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
     if (!userId || !exercise || !muscle || !sets || !reps || !weight) {
       return res.status(400).json({ message: 'All fields are required' });
     }
-    const newRoutine = new Routine({ userId, exercise, muscle, sets, reps, weight });
+    const newRoutine = new Routines({ userId, exercise, muscle, sets, reps, weight });
     await newRoutine.save();
     res.status(201).json(newRoutine);
   } catch (error) {
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
 // PATCH (update) an existing routine
 router.patch('/:id', async (req, res) => {
   try {
-    const updatedRoutine = await Routine.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedRoutine = await Routines.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedRoutine) {
       return res.status(404).json({ message: 'Routine not found' });
     }
@@ -47,7 +47,7 @@ router.patch('/:id', async (req, res) => {
 // DELETE a routine
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedRoutine = await Routine.findByIdAndDelete(req.params.id);
+    const deletedRoutine = await Routines.findByIdAndDelete(req.params.id);
     if (!deletedRoutine) {
       return res.status(404).json({ message: 'Routine not found' });
     }

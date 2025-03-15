@@ -7,12 +7,10 @@ const { User, Settings } = require('../db/index');
 // GET the user's dashboard settings
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
+  console.log(userId, 'hi');
   console.log(`GET request for userId: ${userId}`); 
-  
-
   try {
-
-    const settings = await Settings.findById({ user_id: userId });
+    const settings = await Settings.find({ user_id: userId });
     console.log('Settings found:', settings);  // Log the settings
     // send back the user's sleep records
     res.status(200).json(settings);
@@ -25,23 +23,14 @@ router.get('/:userId', async (req, res) => {
 router.post('/:userId', async (req, res) => {
   const { userId } = req.params;
   const settings = req.body;
-  console.log(`POST request for userId: ${userId} with settings:`, settings); 
   try {
-    // reject request if the given user id is invalid
-    // const user = await User.findById(userId);
-    // if (!user) {
-    //   return res.status(404).json({ message: 'User not found' });
+    // reject request if the given user already has settings
+    // const user = await Settings.find({ user_id: userId });
+    // if (user) {
+    //   console.log('Cannot add new to existing user')
+    //   return res.status(405).json({ message: 'User settings exist, patch required' });
     // }
-
-    // add the user id onto the sleepRecord object before it is used to make a new sleep record
-    const user = await User.findById(userId);
-    if (!user) {
-      console.log('User not found');
-      return res.status(404).json({ message: 'User not found' });
-    }
-    settings.user_id = userId;
-
-    // create new sleep record
+    
     const newUserSettings = await Settings.create(settings);
     
     console.log('New user settings saved:', newUserSettings);  //
@@ -51,5 +40,23 @@ router.post('/:userId', async (req, res) => {
     res.status(500).json({ message: 'error saving user', error });
   }
 });
+
+router.patch('/:userId', async (req, res) => {
+  const {userId} = req.params;
+  
+  try {
+    const setting = await Settings.findOneAndUpdate({user_id: userId}, req.body, { new: true });
+
+    if (!setting) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log('Settings updated at server')
+    res.json({message: 'settings updated', setting});
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Error updating settings', error });
+  }
+});
+
 
 module.exports = router;

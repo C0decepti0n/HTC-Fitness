@@ -13,6 +13,13 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Divider,
+  Chip,
+  Box,
+  Card,
+  Container,
+  GlobalStyles,
+
 } from '@mui/material';
 import {
   Stars,
@@ -45,7 +52,6 @@ const Sleep = ({ user }) => {
     day: null,
     begin_sleep: null,
     stop_sleep: null,
-    user_id: user._id,
   });
 
   console.log(user);
@@ -59,7 +65,7 @@ const Sleep = ({ user }) => {
       getSleepRecords();
     } else if (sleepRecords.length !== 0 && !sleepRecord._id) {
       // otherwise if the main sleep record hasn't been set in state yet and if sleepRecords isn't empty,
-      // find the first sleep record that is "in progress" and assign the record to be the value of the state's main sleep record
+      // find the first sleep record that is 'in progress' and assign the record to be the value of the state's main sleep record
       let found = false;
       for (let i = 0; i < sleepRecords.length; i++) {
         if (sleepRecords[i].in_progress) {
@@ -69,7 +75,7 @@ const Sleep = ({ user }) => {
         }
       }
 
-      // if an "in progress" sleep record can't be found, use the most recent record instead
+      // if an 'in progress' sleep record can't be found, use the most recent record instead
       if (!found) {
         setSleepRecord(sleepRecords[0]);
       }
@@ -91,12 +97,13 @@ const Sleep = ({ user }) => {
   }
 
   // POST new sleep record
-  const postSleepRecords = () => {
-    axios.post(`/api/sleep/${user._id}`)
+  const postSleepRecord = () => {
+    axios.post(`/api/sleep/${user._id}`, {})
     .then(newSleepRecordObj => {
       console.log('POST');
       console.log(newSleepRecordObj);
-      setSleepRecords(newSleepRecordObj.data.data);
+      // refresh sleep records in state
+      getSleepRecords();
     })
     .catch(err => {
       console.error('Failed to find sleep records', err)
@@ -104,12 +111,13 @@ const Sleep = ({ user }) => {
   }
 
   // PATCH new sleep record
-  const patchSleepRecords = () => {
-    axios.get(`/api/sleep/${user._id}`)
+  const patchSleepRecord = () => {
+    axios.patch(`/api/sleep/${user._id}/${sleepRecord._id}`, {})
     .then(oldSleepRecordObj => {
       console.log('PATCH');
       console.log(oldSleepRecordObj);
-      setSleepRecords(oldSleepRecordObj.data.data);
+      // refresh sleep records in state
+      getSleepRecords();
     })
     .catch(err => {
       console.error('Failed to find sleep records', err)
@@ -117,12 +125,13 @@ const Sleep = ({ user }) => {
   }
 
   // DELETE sleep record
-  const deleteSleepRecords = () => {
-    axios.get(`/api/sleep/${user._id}`)
+  const deleteSleepRecord = () => {
+    axios.delete(`/api/sleep/${user._id}/${sleepRecord._id}`)
     .then(deletedSleepRecordsObj => {
       console.log('DELETE');
       console.log(deletedSleepRecordsObj);
-      setSleepRecords(deletedSleepRecordsObj.data.data);
+      // refresh sleep records in state
+      getSleepRecords();
     })
     .catch(err => {
       console.error('Failed to find sleep records', err)
@@ -144,65 +153,83 @@ const Sleep = ({ user }) => {
 
   return (
     <div>
-      {/* IN PROGRESS (TEMPORARY TESTING MUI) */}
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="sleep records">
-          <TableHead>
-            <TableRow>
-              <TableCell>Day</TableCell>
-              <TableCell align="right">Hours Slept</TableCell>
-              <TableCell align="right">Hours Goal</TableCell>
-              <TableCell align="right">Disturbances</TableCell>
-              <TableCell align="right">Disturbance Notes</TableCell>
-              <TableCell align="right">Sleep Aid Used</TableCell>
-              <TableCell align="right">Sleep Starting Time</TableCell>
-              <TableCell align="right">Sleep Ending Time</TableCell>
-              <TableCell align="right">Sleep Rating</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.hours + row.aid + row.goal}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.hours}
-                </TableCell>
-                <TableCell align="right">{row.goal}</TableCell>
-                <TableCell align="right">{row.disturbances}</TableCell>
-                <TableCell align="right">{row.disturbanceNotes}</TableCell>
-                <TableCell align="right">{row.aid}</TableCell>
-                <TableCell align="right">{row.start}</TableCell>
-                <TableCell align="right">{row.end}</TableCell>
-                <TableCell align="right">{row.rating}</TableCell>
-                <TableCell align="right">
-                  <Rating
-                    name="Sleep Rating"
-                    value={3}
-                    max={7}
-                    icon={<Stars fontSize="inherit" />}
-                    emptyIcon={<Circle fontSize="inherit" />}
-                    readOnly
-                  />
-                </TableCell>
+      <Box sx={{ p: 2 }}>
+        <Card component={Card} variant='outlined' sx={{ minWidth: 300, maxWidth: 700, textAlign: 'center', bgColor: 'secondary' }}>
+          PLACEHOLDAH
+        </Card>
+        <Container maxWidth="lg">
+          <Box sx={{ bgcolor: '#cfe8fc', height: '10vh' }} />
+          <Box component={Paper} variant='outlined' sx={{ minWidth: 300, maxWidth: 700, textAlign: 'center', bgcolor: 'primary' }}>
+            {/* <Typography variant='h1' textAlign='center'> */}
+            <GlobalStyles styles={{ h1: { color: 'grey' } }} />
+            <h1>Grey h1 element</h1>
+            {/* </Typography> */}
+          </Box>
+        </Container>
+      </Box>
+      <Divider />
+      <Box sx={{ p: 2 }}>
+        {/* IN PROGRESS (TEMPORARY TESTING MUI) */}
+        <TableContainer component={Paper} variant='outlined'>
+          <Table sx={{ minWidth: 700 }} aria-label='sleep records'>
+            <TableHead>
+              <TableRow>
+                <TableCell>Day</TableCell>
+                <TableCell align='right'>Hours Slept</TableCell>
+                <TableCell align='right'>Hours Goal</TableCell>
+                <TableCell align='right'>Disturbances</TableCell>
+                <TableCell align='right'>Disturbance Notes</TableCell>
+                <TableCell align='right'>Sleep Aid Used</TableCell>
+                <TableCell align='right'>Sleep Starting Time</TableCell>
+                <TableCell align='right'>Sleep Ending Time</TableCell>
+                <TableCell align='right'>Sleep Rating</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <div>PAIN</div>
-      <Typography component="legend">Sleep Rating</Typography>
-      <Rating
-        name="Sleep Rating"
-        defaultValue={3}
-        max={7}
-        icon={<Stars fontSize="inherit" />}
-        emptyIcon={<Circle fontSize="inherit" />}
-        readOnly
-      />
-      <div>emotional support V1 for programmers ;]</div>
-      <img src="https://i.etsystatic.com/48285043/r/il/38bfed/5614526251/il_600x600.5614526251_36m9.jpg" />
+            </TableHead>
+            <TableBody>
+              {sleepRecords.map((sleepRecordObj) => (
+                <TableRow
+                  key={sleepRecordObj._id}
+                  sx={{ '&:last-child th': { border: 0 } }}
+                >
+                  <TableCell component='th' scope='row'>
+                    {sleepRecordObj.day}
+                  </TableCell>
+                  <TableCell align='right'>{sleepRecordObj.hours_slept}</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.goal}</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.disturbances}</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.disturbance_notes}</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.sleep_aid}</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.begin_sleep}</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.stop_sleep}</TableCell>
+                  <TableCell align='right'>
+                    <Rating
+                      name='Sleep Rating'
+                      value={sleepRecordObj.rating}
+                      max={7}
+                      icon={<Stars fontSize='inherit' />}
+                      emptyIcon={<Circle fontSize='inherit' />}
+                      readOnly
+                    />
+                    in_progress: true,
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <div>PAIN</div>
+        <Typography component='legend'>Sleep Rating</Typography>
+        <Rating
+          name='Sleep Rating'
+          defaultValue={3}
+          max={7}
+          icon={<Stars fontSize='inherit' />}
+          emptyIcon={<Circle fontSize='inherit' />}
+          readOnly
+        />
+        <div>emotional support V1 for programmers ;]</div>
+        <img src='https://i.etsystatic.com/48285043/r/il/38bfed/5614526251/il_600x600.5614526251_36m9.jpg' />
+      </Box>
     </div>
   );
 };

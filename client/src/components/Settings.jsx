@@ -10,7 +10,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 
 const Settings = ({ user }) => {
-
+  const [dashboard, setDashboard] = useState([])
   const [selectedBoxes, setSelectedBoxes] = useState({
     // default check values
     exerciseSuggestions: false, 
@@ -25,7 +25,7 @@ const Settings = ({ user }) => {
         const response = await axios.get(`/api/settings/${user._id}`);
         // console.log(response.data[0].dashboard)
         const dashboardSettings = response.data[0].dashboard;
-        console.log(dashboardSettings);
+        setDashboard(dashboardSettings)
         setSelectedBoxes({
           exerciseSuggestions: dashboardSettings.includes('exerciseSuggestions'),
           weightCard: dashboardSettings.includes('weightCard'),
@@ -46,8 +46,8 @@ const Settings = ({ user }) => {
       ...prevState,
       [name]: checked,
     }));
-    console.log(`Checkbox "${name}" is now:`, checked);
-    // patchData({[name]: checked})
+    // console.log(`Checkbox "${name}" is now:`, checked);
+    patchData(name, checked);
     // try {
     //   // Send update to server
     //   await axios.patch(`/api/users/${user.id}/settings`, {
@@ -65,19 +65,25 @@ const Settings = ({ user }) => {
   }
   
   // patch request to server for client's preferences
-  // const patchData = async (setting, isChecked, previousState) => {
-  //   console.log('pathch', setting, isChecked)
-  //   try {
-  //     const response = await axios.patch(`/api/settings/${user._id}`, {
-  //       setting,
-  //       action: isChecked ? 'add' : 'remove',
-  //     });
-  //     console.log('updated user settigns', response.data)
-  //   } catch(error) {
-  //     console.error('Dashboard preference update failed', error)
-  //     setSelectedBoxes(previousState);
-  //   }
-  // };
+  const patchData = async (setting, isChecked) => {
+    console.log(setting)
+    
+    
+    try {
+      if (isChecked) {
+        dashboard.push(setting)
+      } else {
+
+        const index = dashboard.indexOf(setting);
+        dashboard.splice(index, 1);
+      }
+      const response = await axios.patch(`/api/settings/${user._id}`, {dashboard: dashboard});
+      console.log('updated user settigns', response.data)
+    } catch(error) {
+      console.error('Dashboard preference update failed', error)
+      // setSelectedBoxes(previousState);
+    }
+  };
 
   return (
     <Box sx={{ p: 2 }}>
@@ -94,7 +100,7 @@ const Settings = ({ user }) => {
               <Checkbox
                 checked={selectedBoxes.exerciseSuggestions}
                 onChange={handleCheckboxChange}
-                name="exercises-suggestions"
+                name="exerciseSuggestions"
               />
             }
             label="Exercise Suggestions"
@@ -104,7 +110,7 @@ const Settings = ({ user }) => {
               <Checkbox
                 checked={selectedBoxes.weightCard}
                 onChange={handleCheckboxChange}
-                name="weight-card"
+                name="weightCard"
               />
             }
             label="Weight"

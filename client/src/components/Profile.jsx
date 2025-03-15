@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 
 const Profile = ({ user }) => {
+  console.log(user)
     //* States *//
     const [gender, setGender] = useState('');
     const [intensity, setIntensity] = useState(3); // Default intensity

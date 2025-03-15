@@ -5,7 +5,7 @@ const TipsSchema = new mongoose.Schema({
   tipsId: String,
   gender: String,
   intensity: Number,
-  tips:  [],
+  tips: [String],
   disabled: Boolean
 });
 

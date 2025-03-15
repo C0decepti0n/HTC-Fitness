@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -16,10 +17,28 @@ import Settings from './Settings.jsx'
 const HomePage = ({ user, exercises, fetchRandomExercises }) => {
   const userName = user ? user.nameFirst : '';
   const navigate = useNavigate();
+  //* usersettings
+  const [settings, setSettings] = useState([])
 
-const handleSettings = () => {
-  navigate('/settings', { state: { from: 'home' } });
-};
+ // Call fetch request on page load
+ useEffect(() => {
+  getProfile();
+}, [])
+
+//* GET profile 
+const getProfile = () => {
+  axios.get(`/api/settings/${user._id}`)
+  .then((response) => {
+    // console.log(response.data)
+  })
+  .catch((err) => {
+    console.log('Failed to find user data', err)
+  })
+}
+
+  const handleSettings = () => {
+    navigate('/settings', { state: { from: 'home' } });
+  };
 
   return (
     <div>
@@ -44,7 +63,8 @@ const handleSettings = () => {
       {`Welcome, ${userName}, to the Hyperbolic Time Chamber`}
       </Typography>
       {/* Exercise Buttons */}
-    <Grid2 >
+      {}
+    <Grid2 aria-label='exercises' >
         {(<Box display="flex" justifyContent="center" gap={2} margin="20px 0">
           <Button
             variant='contained'

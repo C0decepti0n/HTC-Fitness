@@ -10,15 +10,16 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 
 const Settings = ({ user }) => {
+  // Dashboard Settings
   const [dashboard, setDashboard] = useState([])
+
   const [selectedBoxes, setSelectedBoxes] = useState({
     // default check values
-    exerciseSuggestions: false, 
+    exerciseSuggestions: true, 
     weightCard: false,
-
   })
 
-  //* GET on mount 
+  //* GET Settings on mount 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -37,8 +38,7 @@ const Settings = ({ user }) => {
     fetchSettings();
   }, [user._id]);
 
-  // const [patchedData, setPatchData] = useState(null);
-
+  // Event Handler
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
     
@@ -46,42 +46,22 @@ const Settings = ({ user }) => {
       ...prevState,
       [name]: checked,
     }));
-    // console.log(`Checkbox "${name}" is now:`, checked);
     patchData(name, checked);
-    // try {
-    //   // Send update to server
-    //   await axios.patch(`/api/users/${user.id}/settings`, {
-    //     setting: name,
-    //     action: checked ? 'add' : 'remove',
-    //   });
-    // } catch (error) {
-    //   console.error('Dashboard preference update failed', error);
-
-    //   // Rollback UI change if API call fails
-    //   setSelectedBoxes((prevState) => {
-    //     return { ...prevState, [name]: !checked };
-    //   });
-    // }
   }
   
-  // patch request to server for client's preferences
+  //* PATCH request to server for client's preferences
   const patchData = async (setting, isChecked) => {
-    console.log(setting)
-    
-    
     try {
       if (isChecked) {
         dashboard.push(setting)
       } else {
-
         const index = dashboard.indexOf(setting);
         dashboard.splice(index, 1);
       }
       const response = await axios.patch(`/api/settings/${user._id}`, {dashboard: dashboard});
-      console.log('updated user settigns', response.data)
+      console.log('updated user settings', response.data)
     } catch(error) {
       console.error('Dashboard preference update failed', error)
-      // setSelectedBoxes(previousState);
     }
   };
 

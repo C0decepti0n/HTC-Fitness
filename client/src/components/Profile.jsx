@@ -8,45 +8,50 @@ import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid2 from '@mui/material/Grid2';
+import Grid from '@mui/system/Grid'
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 
 const Profile = ({ user }) => {
-  console.log(user._id)
-  // mount user profile
+  
+  //* States *//
+  const [profile, setProfile] = useState([]);
+  const [gender, setGender]= useState('');
+  const [preferredName, setPreferredName]= useState('');
+
+  // Call fetch request on page load
   useEffect(() => {
     getProfile();
   }, [])
-  // set profile state
-  const [profile, setProfile] = useState([]);
 
-
-  // axios get request
+  //* GET profile 
   const getProfile = () => {
     axios.get(`/api/settings/${user._id}`)
     .then((response) => {
-      console.log(response.data)
+      // setPreferredName = response.data[0].preferredName;
+      setGender = response.data[0].gender;
+
     })
     .catch((err) => {
       console.log('Failed to find user data', err)
     })
   }
 
+  //* Fill Profile *//
   const fillProfile = () => {
 
   }
 
-  const [gender, setGender]= useState('');
-
+  // Condtional logic if new user // 
+  //* Patch  
   const saveName = (event) => {
     
-    const prefName = (event.target.value);
+    setPreferredName = event.target.value;
     // axios.patch('/settings/')
   }
 
   const handleChange = (event) => {
-    
     setGender(event.target.value);
   };
 

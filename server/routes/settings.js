@@ -7,11 +7,11 @@ const { User, Settings } = require('../db/index');
 // GET the user's dashboard settings
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
-  console.log(userId, 'hi');
-  console.log(`GET request for userId: ${userId}`); 
+  // console.log(userId, 'hi');
+  // console.log(`GET request for userId: ${userId}`); 
   try {
     const settings = await Settings.find({ user_id: userId });
-    console.log('Settings found:', settings);  // Log the settings
+    // console.log('Settings found:', settings);  // Log the settings
     // send back the user's sleep records
     res.status(200).json(settings);
   } catch (error) {

@@ -10,9 +10,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 
 const Settings = ({ user }) => {
+  
+  // Preferred Name
+  const [prefName, setPrefName] = useState('');
+  
+  
   // Dashboard Settings
-  const [dashboard, setDashboard] = useState([])
-
+  const [dashboard, setDashboard] = useState([]);
+  // Dashboard Preferences
   const [selectedBoxes, setSelectedBoxes] = useState({
     // default check values
     exerciseSuggestions: true, 
@@ -24,7 +29,10 @@ const Settings = ({ user }) => {
     const fetchSettings = async () => {
       try {
         const response = await axios.get(`/api/settings/${user._id}`);
-        // console.log(response.data[0].dashboard)
+        //* preferred name box *//
+        setPrefName(response.data[0].prefName);
+        console.log(prefName);
+        //* dashboard checks *//
         const dashboardSettings = response.data[0].dashboard;
         setDashboard(dashboardSettings)
         setSelectedBoxes({

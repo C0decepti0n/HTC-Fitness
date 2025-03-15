@@ -15,10 +15,13 @@ import Settings from './Settings.jsx'
 
 
 const HomePage = ({ user, exercises, fetchRandomExercises }) => {
-  const userName = user ? user.nameFirst : '';
+  // Preferred Name
+  const [prefName, setPrefName] = useState('');
+
+  const userName = user ? prefName : user.nameFirst;
   const navigate = useNavigate();
   //* usersettings
-  const [settings, setSettings] = useState([])
+  const [settings, setSettings] = useState([]);
 
  // Call fetch request on page load
  useEffect(() => {
@@ -29,7 +32,7 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
 const getProfile = () => {
   axios.get(`/api/settings/${user._id}`)
   .then((response) => {
-    // console.log(response.data)
+    setPrefName(response.data[0].prefName);
   })
   .catch((err) => {
     console.log('Failed to find user data', err)

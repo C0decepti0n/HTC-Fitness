@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
@@ -8,33 +9,75 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 
 
-const Settings = () => {
+const Settings = ({ user }) => {
 
   const [selectedBoxes, setSelectedBoxes] = useState({
-    exercises: true,
+    // default check values
+    exerciseSuggestions: false, 
     weightCard: false,
 
   })
 
-  const [patchedData, setPatchData] = useState(null);
+  //* GET on mount 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get(`/api/settings/${user._id}`);
+        // console.log(response.data[0].dashboard)
+        const dashboardSettings = response.data[0].dashboard;
+        console.log(dashboardSettings);
+        setSelectedBoxes({
+          exerciseSuggestions: dashboardSettings.includes('exerciseSuggestions'),
+          weightCard: dashboardSettings.includes('weightCard'),
+        });
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      }
+    };
+    fetchSettings();
+  }, [user._id]);
+
+  // const [patchedData, setPatchData] = useState(null);
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
+    
     setSelectedBoxes((prevState) => ({
       ...prevState,
       [name]: checked,
-    }))
-    console.log([name]);
+    }));
+    console.log(`Checkbox "${name}" is now:`, checked);
+    // patchData({[name]: checked})
+    // try {
+    //   // Send update to server
+    //   await axios.patch(`/api/users/${user.id}/settings`, {
+    //     setting: name,
+    //     action: checked ? 'add' : 'remove',
+    //   });
+    // } catch (error) {
+    //   console.error('Dashboard preference update failed', error);
+
+    //   // Rollback UI change if API call fails
+    //   setSelectedBoxes((prevState) => {
+    //     return { ...prevState, [name]: !checked };
+    //   });
+    // }
   }
   
   // patch request to server for client's preferences
-  const patchData = async () => {
-    try {
-
-    } catch(error) {
-      console.error('Dashboard preference update failed', error)
-    }
-  };
+  // const patchData = async (setting, isChecked, previousState) => {
+  //   console.log('pathch', setting, isChecked)
+  //   try {
+  //     const response = await axios.patch(`/api/settings/${user._id}`, {
+  //       setting,
+  //       action: isChecked ? 'add' : 'remove',
+  //     });
+  //     console.log('updated user settigns', response.data)
+  //   } catch(error) {
+  //     console.error('Dashboard preference update failed', error)
+  //     setSelectedBoxes(previousState);
+  //   }
+  // };
 
   return (
     <Box sx={{ p: 2 }}>
@@ -49,9 +92,9 @@ const Settings = () => {
           <FormControlLabel
             control={
               <Checkbox
-                checked={selectedBoxes.exercises}
+                checked={selectedBoxes.exerciseSuggestions}
                 onChange={handleCheckboxChange}
-                name="exercises"
+                name="exercises-suggestions"
               />
             }
             label="Exercise Suggestions"
@@ -61,7 +104,7 @@ const Settings = () => {
               <Checkbox
                 checked={selectedBoxes.weightCard}
                 onChange={handleCheckboxChange}
-                name="weightCard"
+                name="weight-card"
               />
             }
             label="Weight"

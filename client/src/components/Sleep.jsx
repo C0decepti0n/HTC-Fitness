@@ -18,7 +18,7 @@ import {
   Box,
   Card,
   Container,
-  GlobalStyles,
+  Slider,
   Button,
   ButtonGroup,
   Stack
@@ -28,7 +28,8 @@ import {
   Circle,
   Delete,
   ChangeCircle,
-  Add,
+  PlayArrow,
+  Stop,
   CheckCircle,
   CheckCircleOutline
 } from '@mui/icons-material';
@@ -46,18 +47,21 @@ const Sleep = ({ user }) => {
   // (prevents an infinite loop that is caused when sleepRecords is empty)
   const [stopRecordsRenderLoop, setStopRecordsRenderLoop] = useState(false);
 
-  // create a state to keep track of the field values that will be used in POST and PATCH requests
-  const [fieldValues, setFieldValues] = useState({
+  // create a default sleep record with default values to reference for filling out field values and for axios requests
+  const defaultRecord = {
     quality: null,
     goal: 8,
-    hours_slept: null,
+    hours_slept: '00:00:00',
     sleep_aid: 'none',
     disturbances: 0,
     disturbance_notes: 'none',
     day: null,
     begin_sleep: null,
     stop_sleep: null,
-  });
+  }
+
+  // create a state to keep track of the field values that will be used in POST and PATCH requests
+  const [fieldValues, setFieldValues] = useState({...defaultRecord});
 
 
 
@@ -195,24 +199,51 @@ console.log(dat2.toTimeString()); // Output: '09:45'
   return (
     <div>
       <Box sx={{ p: 2 }}>
-        <Box component={Card} variant='outlined' sx={{ minWidth: 300, maxWidth: 700, textAlign: 'center', bgColor: 'secondary' }}>
+        <Box component={Paper} variant='outlined' sx={{ minWidth: 300, maxWidth: 700, textAlign: 'center', bgColor: 'secondary' }}>
           PLACEHOLDAH
         </Box>
         <Container maxWidth='lg'>
           <Box sx={{ bgcolor: '#cfe8fc', height: '10vh' }} />
-          <Card component={Paper} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgcolor: 'primary', fontSize: 50 }}>
-            {/* <Typography variant='h1' textAlign='center'> */}
-            <GlobalStyles styles={{ h1: { color: 'red' } }} />
-            <h1>{`${sleepRecord.hours_slept}`}</h1>
-            {sleepRecord.hours_slept}
-            {/* </Typography> */}
-            <Box component={Card} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgColor: 'secondary' }}>
-              <Stack direction='row' spacing={2}>
-                <Chip label='Start Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
-                <Chip label='Stop Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
-                <Divider variant='middle' orientation='vertical' />
-                <Chip label='Update Current' variant='outlined' onClick={e => {console.log('foobar')}} />
-                <Chip label='Delete Current' variant='outlined' onClick={e => {console.log('foobar')}} />
+          <Card component={Card} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgcolor: 'primary', fontSize: 30 }}>
+            {/* Display the "time slept" for the current sleepRecord */}
+            <Typography variant='h1' textAlign='center' color={sleepRecord.stop_sleep ? 'white' : 'gray'}>
+              {sleepRecord.hours_slept}
+            </Typography>
+            <Divider />
+            <Box component={Paper} variant='outlined'>
+              <Stack direction='column' spacing={5}>
+                <Box display="flex">
+                  Goal (Hours):
+                  <Typography color='gray'>
+                    {fieldValues.goal}
+                  </Typography>
+                  <Slider valueLabelDisplay="auto" defaultValue={8} step={1} marks min={0} max={24}/>
+                </Box>
+                <Box display="flex">
+                  <PlayArrow fontSize='inherit' />
+                  <Chip label='Start Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
+                </Box>
+              </Stack>
+            </Box>
+            <Box component={Paper} variant='outlined' display="flex" justifyContent="center" alignItems="center" sx={{ minWidth: 300, maxWidth: 'lg' }}>
+              <Stack direction='row' spacing={5}>
+                <Box display="flex">
+                  <PlayArrow fontSize='inherit' />
+                  <Chip label='Start Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
+                </Box>
+                <Box display="flex">
+                  <Stop fontSize='inherit' />
+                  <Chip label='Stop Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
+                </Box>
+                <Divider variant='middle' orientation='vertical' flexItem />
+                <Box display="flex">
+                  <ChangeCircle fontSize='inherit' />
+                  <Chip label='Update Current' variant='outlined' onClick={e => {console.log('foobar')}} />
+                </Box>
+                <Box display="flex">
+                  <Delete fontSize='inherit' />
+                  <Chip label='Delete Current' variant='outlined' onClick={e => {console.log('foobar')}} />
+                </Box>
               </Stack>
             </Box>
           </Card>
@@ -220,6 +251,7 @@ console.log(dat2.toTimeString()); // Output: '09:45'
       </Box>
       <Divider variant='middle' />
       <Box sx={{ p: 2 }}>
+        {/* Table to hold all of the user's sleep records */}
         <TableContainer component={Paper} variant='outlined'>
           <Table sx={{ minWidth: 700 }} aria-label='sleep records'>
             <TableHead>
@@ -258,7 +290,7 @@ console.log(dat2.toTimeString()); // Output: '09:45'
                   <TableCell align='right'>
                     <ButtonGroup variant='contained' aria-label='quick select and delete'>
                       <Button>
-                        <CheckCircleOutline fontSize='inherit' />
+                        {sleepRecordObj._id === sleepRecord._id ? <CheckCircle fontSize='inherit' /> : <CheckCircleOutline fontSize='inherit' /> }
                         Select
                       </Button>
                       <Button>

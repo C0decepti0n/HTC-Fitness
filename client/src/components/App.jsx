@@ -23,7 +23,7 @@ import Tips from './TipsPopup.jsx';
 import Reminders from './ReminderCard.jsx'
 import Settings from './Settings.jsx'
 import Profile from './Profile.jsx'
-import Reminders from './ReminderCard.jsx';
+
 
 
 const lightTheme = createTheme({
@@ -152,11 +152,6 @@ const App = () => {
               </ProtectedRoute>
             } />
          
-         <Route path="/reminders" element={
-              <ProtectedRoute>
-                <Reminders user={userProfile}/>
-              </ProtectedRoute>
-            } />
          
          
          

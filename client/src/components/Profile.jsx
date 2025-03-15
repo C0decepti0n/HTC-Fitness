@@ -1,82 +1,119 @@
-import React, {useState, useEffect} from 'react';
-import axios from 'axios'
-
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Grid2 from '@mui/material/Grid2';
-import Grid from '@mui/system/Grid'
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+    InputLabel, MenuItem, FormControl, Select, Box, Button,
+    Typography, Paper, TextField
+} from '@mui/material';
 
 const Profile = ({ user }) => {
-  
-  //* States *//
-  // const [profile, setProfile] = useState([]); // not sure if needed
-  const [gender, setGender]= useState('');
-  // state about intensity
-  
+    //* States *//
+    const [gender, setGender] = useState('');
+    const [intensity, setIntensity] = useState(3); // Default intensity
+    const [tipsEnabled, setTipsEnabled] = useState(true); // Track tips feature
 
-  // Call fetch request on page load
-  useEffect(() => {
-    getProfile();
-  }, [])
+    //* Fetch user profile data from backend on page load *//
+    useEffect(() => {
+        if (user?._id) {
+            getProfile();
+        }
+    }, [user]);
 
-  //* GET profile 
-  const getProfile = () => {
-    axios.get(`/api/tips/${user._id}`)
-    .then((response) => {
-      
-      setGender = response.data[0].gender;
+    const getProfile = async () => {
+        try {
+            const response = await axios.get(`/api/tips/${user._id}`);
+            if (response.data) {
+                setGender(response.data.gender || '');
+                setIntensity(response.data.intensity || 3);
+                setTipsEnabled(response.data.tipsEnabled !== false); // Default true
+            }
+        } catch (err) {
+            console.error('Failed to fetch user data', err);
+        }
+    };
 
-    })
-    .catch((err) => {
-      console.log('Failed to find user data', err)
-    })
-  }
+    //* Handle Gender Change *//
+    const handleGenderChange = async (event) => {
+        const newGender = event.target.value;
+        setGender(newGender);
 
-  //* Fill Profile from get *//
-  const fillProfile = () => {
+        try {
+            await axios.patch(`/api/tips/${user._id}`, { gender: newGender });
+        } catch (error) {
+            console.error('Error updating gender:', error);
+        }
+    };
 
-  }
+    //* Handle Intensity Change *//
+    const handleIntensityChange = async (event) => {
+        const newIntensity = event.target.value;
+        setIntensity(newIntensity);
 
-  
-  //* Patch  
- 
+        try {
+            await axios.patch(`/api/tips/${user._id}`, { intensity: newIntensity });
+        } catch (error) {
+            console.error('Error updating intensity:', error);
+        }
+    };
 
-  const handleChange = (event) => {
-    //change intensity
-    // intensity (event.target.value);
-  };
+    //* Disable Tips Feature *//
+    const handleDisableTips = async () => {
+        setTipsEnabled(false); // Disable locally
 
-  return (
-    <Paper>
-      <Typography>
-        User Profile
-      </Typography>
-      {/* Add something about intensity */}
-      {/* Option to disable tips check box */}
-      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-        <InputLabel id="gender">Gender</InputLabel>
-        <Select
-          labelId="gender-label"
-          id="gender-select"
-          value={gender}
-          label="Gender"
-          onChange={handleChange}
-        >
-          <MenuItem value={'male'}>Male</MenuItem>
-          <MenuItem value={'female'}>Female</MenuItem>
-         
-        </Select>
-      </FormControl>
-    </Paper>
-    
-  )
+        try {
+            await axios.patch(`/api/tips/${user._id}`, { tipsEnabled: false });
+        } catch (error) {
+            console.error('Error disabling tips:', error);
+        }
+    };
+
+    return (
+        <Paper sx={{ padding: 3, maxWidth: 400, margin: 'auto', textAlign: 'center' }}>
+            <Typography variant="h5">User Profile</Typography>
+
+            {/* Gender Selection */}
+            <FormControl sx={{ m: 2, minWidth: 150 }}>
+                <InputLabel id="gender-label">Gender</InputLabel>
+                <Select
+                    labelId="gender-label"
+                    id="gender-select"
+                    value={gender}
+                    label="Gender"
+                    onChange={handleGenderChange}
+                >
+                    <MenuItem value={'male'}>Male</MenuItem>
+                    <MenuItem value={'female'}>Female</MenuItem>
+                </Select>
+            </FormControl>
+
+            {/* Intensity Selection */}
+            <FormControl sx={{ m: 2, minWidth: 150 }}>
+                <InputLabel id="intensity-label">Intensity</InputLabel>
+                <Select
+                    labelId="intensity-label"
+                    id="intensity-select"
+                    value={intensity}
+                    label="Intensity"
+                    onChange={handleIntensityChange}
+                >
+                    {[1, 2, 3, 4, 5, 6, 7].map((level) => (
+                        <MenuItem key={level} value={level}>{level}</MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            {/* Disable Tips Feature */}
+            <Box mt={2}>
+                <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleDisableTips}
+                    disabled={!tipsEnabled}
+                >
+                    {tipsEnabled ? "Disable Tips Feature" : "Tips Disabled"}
+                </Button>
+            </Box>
+        </Paper>
+    );
 };
 
 export default Profile;

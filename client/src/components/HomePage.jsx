@@ -17,9 +17,10 @@ import Settings from './Settings.jsx'
 const HomePage = ({ user, exercises, fetchRandomExercises }) => {
   // Preferred Name
   const [prefName, setPrefName] = useState('');
+  const userName = prefName || user.nameFirst;
 
-  const userName = user ? prefName : user.nameFirst;
   const navigate = useNavigate();
+  
   //* usersettings
   const [settings, setSettings] = useState([]);
 

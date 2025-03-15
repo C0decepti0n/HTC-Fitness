@@ -4,44 +4,44 @@ import axios from 'axios';
 
 const TipsPopup = ({ userId }) => {
     const [tips, setTips] = useState([]);
-    const [open, setOpen] = useState(true);
-    const [intensity, setIntensity] = useState(3); // Default intensity
+    const [open, setOpen] = useState(true); // Set true to show immediately
+    const [intensity, setIntensity] = useState(3);
+    const [gender, setGender] = useState('male'); // Default gender
 
-   
+
+    // if gender is blank and ins
     useEffect(() => {
         if (userId) {
             fetchTips();
         }
-    }, [userId]);
+    }, [userId, gender, intensity]);
 
-    
+    // Fetch tips based on userId, gender, and intensity
     const fetchTips = async () => {
         try {
             console.log("Fetching tips for userId:", userId);
-
             if (!userId || userId.length !== 24) {
                 console.error("Invalid userId passed:", userId);
                 return;
             }
 
-            const response = await axios.get(`/api/tips/${userId}`);
-            console.log("API Response:", response.data);
+            const response = await axios.get(`/api/tips/${userId}`, {
+                params: { gender, intensity }
+            });
 
+            console.log("API Response:", response.data);
             setTips(response.data.tips || []);
         } catch (error) {
             console.error('Error fetching tips:', error);
         }
     };
 
+    const handleGenderChange = async (event) => {
+        setGender(event.target.value);
+    };
+
     const handleIntensityChange = async (event) => {
-        const newIntensity = event.target.value;
-        setIntensity(newIntensity);
-        try {
-            await axios.patch(`/api/tips/${userId}/intensity`, { intensity: newIntensity });
-            fetchTips();
-        } catch (error) {
-            console.error('Error updating intensity:', error);
-        }
+        setIntensity(event.target.value);
     };
 
     const handleDeleteFeature = async () => {
@@ -58,14 +58,27 @@ const TipsPopup = ({ userId }) => {
         <Dialog open={open} onClose={() => setOpen(false)}>
             <Box p={3} textAlign='center'>
                 <Typography variant='h6'>Daily Workout Tips</Typography>
-                {tips.length > 0 ? (
-                    tips.map((tip, index) => (
-                        <Typography key={index} variant='body1'>{tip}</Typography>
-                    ))
-                ) : (
-                    <Typography>No tips available</Typography>
-                )}
 
+                {tips.length > 0 ? (
+            tips.map((tip, index) => (
+                <Typography key={index} variant='body1'>- {tip}</Typography>
+            ))
+        ) : (
+            <Typography variant='body2' color='error'>
+                Loading tips... Please check your selection.
+            </Typography>
+        )}
+
+                {/* Gender Selection */}
+                <Box mt={2}>
+                    <Typography variant='body2'>Select Gender:</Typography>
+                    <Select value={gender} onChange={handleGenderChange}>
+                        <MenuItem value="male">Male</MenuItem>
+                        <MenuItem value="female">Female</MenuItem>
+                    </Select>
+                </Box>
+
+                {/* Intensity Selection */}
                 <Box mt={2}>
                     <Typography variant='body2'>Adjust Workout Intensity:</Typography>
                     <Select value={intensity} onChange={handleIntensityChange}>

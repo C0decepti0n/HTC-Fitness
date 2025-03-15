@@ -18,18 +18,16 @@ import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
 import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
-
-import Tips from './TipsPopup.jsx';
-import Reminders from './ReminderCard.jsx'
-import Settings from './Settings.jsx'
-import Profile from './Profile.jsx'
-
+import Tips from './TipsPopup.jsx'; 
+import TipsPopup from './TipsPopup.jsx';
+import Reminders from './ReminderCard.jsx';
+import Settings from './Settings.jsx';
+import Profile from './Profile.jsx';
 
 const lightTheme = createTheme({
   palette: {
     mode: 'light',
     background: {
-
       default: 'white',
     },
   },
@@ -45,14 +43,14 @@ const darkTheme = createTheme({
 });
 
 const App = () => {
-  // detect user color preference
+  // Detect user color preference
   const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const theme = prefersDarkMode ? darkTheme : lightTheme;
 
   const [exercises, setExercises] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
-  
+  const [showPopup, setShowPopup] = useState(false); // controls popup visibility
 
   useEffect(() => {
     // Check if user is authenticated
@@ -61,16 +59,18 @@ const App = () => {
         const response = await axios.get('/api/check-auth');
         setIsAuthenticated(response.data.isAuthenticated);
 
-        // Fetch user profile if authenticated
         if (response.data.isAuthenticated) {
           const profileResponse = await axios.get('/me');
           setUserProfile(profileResponse.data);
+
+          //  show popup immediately after login
+          setShowPopup(true);
         } else {
           setUserProfile(null);
         }
       } catch (error) {
         setIsAuthenticated(false);
-        throw new Error('Error checking auth', error);
+        console.error('Error checking auth', error);
       }
     };
 
@@ -102,19 +102,25 @@ const App = () => {
         <CssBaseline />
         <Router>
           {isAuthenticated && <NavBar setIsAuthenticated={setIsAuthenticated} />}
+
+          {/*  Show TipsPopup Immediately */}
+          {isAuthenticated && userProfile && (
+    <TipsPopup userId={userProfile._id} />
+)}
+
           <Routes>
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
             <Route path="/" element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                
+              <ProtectedRoute>
                 <HomePage
                   user={userProfile}
                   exercises={exercises}
                   fetchRandomExercises={fetchRandomExercises}
                 />
-                
               </ProtectedRoute>
             } />
+
+            
             <Route path="/routines" element={
               <ProtectedRoute>
                 <Routines savedExercises={userProfile?.saved_exercises || []} userId={userProfile?._id} />
@@ -122,32 +128,27 @@ const App = () => {
             } />
             <Route path="/goals" element={
               <ProtectedRoute>
-                <Goals user={userProfile}/>
+                <Goals user={userProfile} />
               </ProtectedRoute>
             } />
             <Route path="/sleep" element={
               <ProtectedRoute>
-                <Sleep user={userProfile}/>
-              </ProtectedRoute>
-            } />
-            <Route path="/tips" element= {
-              <ProtectedRoute>
-                <Tips user={userProfile}/>
+                <Sleep user={userProfile} />
               </ProtectedRoute>
             } />
             <Route path="/reminders" element={
               <ProtectedRoute>
-                <Reminders user={userProfile}/>
+                <Reminders user={userProfile} />
               </ProtectedRoute>
             } />
             <Route path="/settings" element={
               <ProtectedRoute>
-                <Settings user={userProfile}/>
+                <Settings user={userProfile} />
               </ProtectedRoute>
             } />
             <Route path="/profile" element={
               <ProtectedRoute>
-                <Profile user={userProfile}/>
+                <Profile user={userProfile} />
               </ProtectedRoute>
             } />
           </Routes>

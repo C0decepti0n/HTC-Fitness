@@ -15,6 +15,8 @@ const tipsRouter = require('./routes/tips');
 
 const settingsRouter = require('./routes/settings');
 
+//update routes
+const routinesRouter = require('./routes/Routine');
 const { User } = require('./db');
 
 // const { Reminder } = require('./db');
@@ -22,8 +24,6 @@ const { User } = require('./db');
 
 
 
-//update routes
-const routinesRouter = require('./routes/Routine.js');
 
 
 dotenv.config({

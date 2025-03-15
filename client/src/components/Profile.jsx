@@ -16,9 +16,10 @@ import TextField from '@mui/material/TextField';
 const Profile = ({ user }) => {
   
   //* States *//
-  const [profile, setProfile] = useState([]);
+  // const [profile, setProfile] = useState([]); // not sure if needed
   const [gender, setGender]= useState('');
-  const [preferredName, setPreferredName]= useState('');
+  // state about intensity
+  
 
   // Call fetch request on page load
   useEffect(() => {
@@ -27,9 +28,9 @@ const Profile = ({ user }) => {
 
   //* GET profile 
   const getProfile = () => {
-    axios.get(`/api/settings/${user._id}`)
+    axios.get(`/api/tips/${user._id}`)
     .then((response) => {
-      // setPreferredName = response.data[0].preferredName;
+      
       setGender = response.data[0].gender;
 
     })
@@ -38,21 +39,18 @@ const Profile = ({ user }) => {
     })
   }
 
-  //* Fill Profile *//
+  //* Fill Profile from get *//
   const fillProfile = () => {
 
   }
 
-  // Condtional logic if new user // 
+  
   //* Patch  
-  const saveName = (event) => {
-    
-    setPreferredName = event.target.value;
-    // axios.patch('/settings/')
-  }
+ 
 
   const handleChange = (event) => {
-    setGender(event.target.value);
+    //change intensity
+    // intensity (event.target.value);
   };
 
   return (
@@ -60,7 +58,8 @@ const Profile = ({ user }) => {
       <Typography>
         User Profile
       </Typography>
-      <TextField id="preferredName" label="Preferred Name" variant="outlined" onChange={saveName} />
+      {/* Add something about intensity */}
+      {/* Option to disable tips check box */}
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
         <InputLabel id="gender">Gender</InputLabel>
         <Select
@@ -72,7 +71,7 @@ const Profile = ({ user }) => {
         >
           <MenuItem value={'male'}>Male</MenuItem>
           <MenuItem value={'female'}>Female</MenuItem>
-          <MenuItem value={'non-binary'}>Non-Binary</MenuItem>
+         
         </Select>
       </FormControl>
     </Paper>

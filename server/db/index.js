@@ -50,8 +50,8 @@ const User = mongoose.model('User', userSchema);
 const Sleep = mongoose.model('Sleep', sleepSchema);
 const Settings = mongoose.model('Settings', settingsSchema)
 const Tips = mongoose.model('Tip', TipsSchema);
-
-module.exports = { Exercise, User, Sleep, RoutineSchema, Tips, Settings };
-
 const Reminder = mongoose.model('Reminder', reminderSchema);
+
+module.exports = { Exercise, User, Sleep, RoutineSchema, Tips, Settings, Reminder};
+
 

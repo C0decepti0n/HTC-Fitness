@@ -20,7 +20,7 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
   const userName = prefName || user.nameFirst;
 
   const navigate = useNavigate();
-  
+
   //* usersettings
   const [settings, setSettings] = useState([]);
 
@@ -33,12 +33,32 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
 const getProfile = () => {
   axios.get(`/api/settings/${user._id}`)
   .then((response) => {
-    setPrefName(response.data[0].prefName);
+    if(response.data && response.data.length > 0) {
+      setPrefName(response.data[0].prefName);
+    } else {
+      createDefaultSettings()
+    }
+
   })
   .catch((err) => {
     console.log('Failed to find user data', err)
   })
-}
+};
+
+const createDefaultSettings = async () => {
+  try {
+    const response = await axios.post(`/api/settings/${user._id}`, {
+      prefName: user.nameFirst,
+      dashboard: ['exerciseSuggestions'],
+      user_id: user._id,
+    });
+    console.log('Default settings created', response.data);
+    getProfile();
+
+  } catch (error) {
+    console.log('failed on client to crate new user settigns', error)
+  }
+};
 
   const handleSettings = () => {
     navigate('/settings', { state: { from: 'home' } });

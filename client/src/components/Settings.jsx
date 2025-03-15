@@ -47,10 +47,9 @@ const Settings = ({ user }) => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        if
         const response = await axios.get(`/api/settings/${user._id}`);
         //* preferred name box *//
-        setPrefName(response.data[0].prefName);
+        setPrefName(response.data[0].prefName || '');
         console.log(prefName);
         //* dashboard checks *//
         const dashboardSettings = response.data[0].dashboard;
@@ -66,6 +65,7 @@ const Settings = ({ user }) => {
     fetchSettings();
   }, [user._id]);
 
+  
   //* Event Handlers *//
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
@@ -140,7 +140,7 @@ const Settings = ({ user }) => {
             <CustomTextField
               id={textFieldId}
               label="Preferred Name"
-              defaultValue={userName}
+              value={prefName}
               onChange={handleInputChange}
               slotProps={{
                 input: {

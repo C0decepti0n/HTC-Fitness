@@ -6,8 +6,10 @@ import { Card, CardContent, Typography, Button, Box, TextField } from '@mui/mate
 const ReminderCard = ({user}) => {
   // set state to store reminders
   const [reminders, setReminders] = useState([]);
-  // edit reminders
-    const [editReminders, setEditReminders] = useState(null);
+  // edit reminders( keep track of which reminders are being edited)
+    const [editRemindersId, setEditRemindersId] = useState(null);
+    const [editReminderInfo, setEditReminderInfo] = useState({ title: '', description: '', date: '' });
+
   // set new reminders
   const [newReminders, setNewReminders] = useState({
     title: '',
@@ -15,6 +17,11 @@ const ReminderCard = ({user}) => {
     date: '',
   });
   
+  const cancelEdit = () => {
+    setEditRemindersId(null);
+  };
+
+
   //handle input change for the new reminders
   const handleInputChange = (e) =>{
     setNewReminders({
@@ -23,7 +30,9 @@ const ReminderCard = ({user}) => {
     })
   }
 
-
+const handleEditChange = (e) =>{
+  setEditReminderInfo({...editReminderInfo, [e.target.name]: e.target.value})
+}
   // axios get request
   const getReminders = async () => {
     try {
@@ -73,12 +82,12 @@ const ReminderCard = ({user}) => {
 
 
   // axios request to update
-  const updateReminders = (id, updatedReminder) => {
+  const updateReminders = async (id) => {
     axios
-      .patch(`/api/reminders/${id}`, updatedReminder)
+      .patch(`/api/reminders/${editRemindersId}`, editReminderInfo)
       .then(() => {
-        getReminders(user._id);
-        setEditReminders(null);
+        setEditRemindersId(null);
+      getReminders(user._id);
       })
       .catch((err) => {
         console.error(err);
@@ -120,165 +129,119 @@ const ReminderCard = ({user}) => {
       });
   };
 
-  
   return (
-    <Box
-  sx={{
-    display: 'flex',
-    justifyContent: 'center', // Center content 
-    alignItems: 'flex-start',  // Align items to the top
-    paddingTop: '40px',
-    width: '100%',
-    maxWidth: '1200px', 
-    margin: '0 auto',  
-  }}
->
-  {/* "My Reminders" Section */}
   <Box
     sx={{
-      width: '48%',
-      marginRight: '4%', 
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "stretch", 
+      paddingTop: "40px",
+      width: "100%",
+      maxWidth: "1000px", 
+      margin: "0 auto",
+      gap: "2%",
     }}
   >
-    <Box
-      sx={{
-        border: '2px solid #1976d2',
-        borderRadius: '8px',
-        padding: '8px 16px',
-        marginBottom: '20px',
-        textAlign: 'center',
-        backgroundColor: '#e3f2fd',
-        width: '100%',
-        maxWidth: '600px',
-        margin: '0 auto',
-      }}
-    >
-      <Typography variant="h4" gutterBottom>
-        My Reminders
-      </Typography>
+    {/* "My Reminders" Section */}
+    <Box sx={{ width: "42%" }}> 
+      <Box
+        sx={{
+          border: "2px solid #1976d2",
+          borderRadius: "8px",
+          padding: "8px 16px",
+          marginBottom: "20px",
+          textAlign: "center",
+          backgroundColor: "#e3f2fd",
+        }}
+      >
+        <Typography variant="h5" gutterBottom>My Reminders</Typography>
+      </Box>
+
+      <Box
+        sx={{
+          maxHeight: "350px", 
+          overflowY: "auto",
+          padding: "8px",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          backgroundColor: "white",
+        }}
+      >
+        {reminders.length === 0 ? (
+          <Typography textAlign="center">No reminders to display</Typography>
+        ) : (
+          reminders.map((reminder) => (
+            <Card key={reminder._id} sx={{ marginBottom: 2 }}>
+              <CardContent>
+                {editRemindersId === reminder._id ? (
+                  <Box>
+                    <TextField label="Title" name="title" value={editReminderInfo.title} onChange={handleEditChange} fullWidth />
+                    <TextField label="Description" name="description" value={editReminderInfo.description} onChange={handleEditChange} fullWidth multiline />
+                    <TextField label="Date" name="date" type="datetime-local" defaultValue={editReminderInfo.date} onChange={handleEditChange} fullWidth />
+                    <Box mt={2} display="flex" justifyContent="center" gap={2}>
+                      <Button onClick={updateReminders} variant="contained">Save</Button>
+                      <Button onClick={cancelEdit} variant="outlined" color="error">Cancel</Button>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Typography variant="h6">{reminder.title}</Typography>
+                    <Typography variant="body2">{reminder.description}</Typography>
+                    <Typography variant="body2">{new Date(reminder.date).toLocaleString()}</Typography>
+                    {reminder.completed && <Typography variant="body2" sx={{ color: "#1976d2" }}>This reminder is completed!</Typography>}
+                  </Box>
+                )}
+                <Box mt={2} display="flex" justifyContent="center" gap={2}>
+                  {!editRemindersId && (
+                    <>
+                      <Button variant="contained" color="primary" onClick={() => handleComplete(reminder._id)}>Complete</Button>
+                      <Button variant="outlined" color="error" onClick={() => handleDelete(reminder._id)}>Delete</Button>
+                      <Button variant="outlined" color="primary" onClick={() => { setEditRemindersId(reminder._id); setEditReminderInfo({ ...reminder, date: reminder.date ? new Date(reminder.date).toISOString().slice(0, 16) : "" }); }}>Edit</Button>
+                    </>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </Box>
     </Box>
 
-    {/* Scrollable Reminders List */}
-    <Box
-      sx={{
-        maxHeight: '400px',
-        overflowY: 'auto',
-        padding: '8px',
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        width: '100%',
-        maxWidth: '600px',
-        margin: '0 auto',
-      }}
-    >
-      {reminders.length === 0 ? (
-        <Typography textAlign="center">No reminders to display</Typography>
-      ) : (
-        reminders.map((reminder) => (
-          <Card key={reminder._id} sx={{ marginBottom: 2, width: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" textAlign="center">
-                {reminder.title}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" textAlign="center">
-                {reminder.description}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" textAlign="center">
-                {new Date(reminder.date).toLocaleString()}
-              </Typography>
-              
-              {/* Display the completion message */}
-              {reminder.completed && (
-                <Typography variant="body2" sx={{ color: '#1976d2' }} textAlign="center">
-                  This reminder is completed!
-                </Typography>
-              )}
+    {/* "Create New Reminder" Section */}
+    <Box sx={{ width: "42%" }}> 
+      <Box
+        sx={{
+          border: "2px solid #1976d2",
+          borderRadius: "8px",
+          padding: "8px 16px",
+          marginBottom: "20px",
+          textAlign: "center",
+          backgroundColor: "#e3f2fd",
+        }}
+      >
+        <Typography variant="h5" gutterBottom>Create New Reminder</Typography>
+      </Box>
 
-              <Box mt={2} display="flex" justifyContent="center" gap={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleComplete(reminder._id)}
-                  sx={{ width: '120px' }}
-                >
-                  Complete
-                </Button>
-
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => handleDelete(reminder._id)}
-                  sx={{ width: '120px' }}
-                >
-                  Delete
-                </Button>
-              
-
-
-
-
-              </Box>
-            </CardContent>
-          </Card>
-        ))
-      )}
+      <Box
+        sx={{
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          padding: "16px",
+          backgroundColor: "white",
+          maxHeight: "350px", 
+        }}
+      >
+        <TextField label="Title" variant="outlined" fullWidth value={newReminders.title} onChange={handleInputChange} name="title" required sx={{ mt: 2 }} />
+        <TextField label="Description" variant="outlined" fullWidth value={newReminders.description} onChange={handleInputChange} name="description" multiline sx={{ mt: 2 }} />
+        <TextField label="Date" variant="outlined" fullWidth value={newReminders.date} onChange={handleInputChange} name="date" type="datetime-local" sx={{ mt: 2 }} />
+        <Button variant="contained" color="primary" onClick={postReminders} sx={{ mt: 2, width: "100%" }}>Create Reminder</Button>
+      </Box>
     </Box>
   </Box>
-
-  {/* "Create New Reminder" Section */}
-  <Box
-    sx={{
-      width: '48%',
-      marginLeft: '4%', 
-    }}
-  >
-    <Typography variant="h6" textAlign="center" sx={{ marginBottom: 2 }}>
-      Create New Reminder
-    </Typography>
-    <TextField
-      label="Title"
-      variant="outlined"
-      fullWidth
-      value={newReminders.title}
-      onChange={handleInputChange}
-      name="title"
-      required
-      sx={{ mt: 2 }}
-    />
-    <TextField
-      label="Description"
-      variant="outlined"
-      fullWidth
-      value={newReminders.description}
-      onChange={handleInputChange}
-      name="description"
-      multiline
-      sx={{ mt: 2 }}
-    />
-    <TextField
-      label="Date"
-      variant="outlined"
-      fullWidth
-      value={newReminders.date}
-      onChange={handleInputChange}
-      name="date"
-      type="datetime-local"
-      sx={{ mt: 2 }}
-    />
-    <Button variant="contained" color="primary" onClick={postReminders} sx={{ mt: 2 }}>
-      Create Reminder
-    </Button>
-  </Box>
-</Box>
+);
 
 
-
-
-
-
-
-
-  );
+  
 };
 
 export default ReminderCard;

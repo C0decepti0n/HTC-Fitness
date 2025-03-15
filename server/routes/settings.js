@@ -25,11 +25,11 @@ router.post('/:userId', async (req, res) => {
   const settings = req.body;
   try {
     // reject request if the given user already has settings
-    const user = await Settings.find({ user_id: userId });
-    if (user) {
-      console.log('Cannot add new to existing user')
-      return res.status(405).json({ message: 'User settings exist, patch required' });
-    }
+    // const user = await Settings.find({ user_id: userId });
+    // if (user) {
+    //   console.log('Cannot add new to existing user')
+    //   return res.status(405).json({ message: 'User settings exist, patch required' });
+    // }
     
     const newUserSettings = await Settings.create(settings);
     
@@ -42,8 +42,10 @@ router.post('/:userId', async (req, res) => {
 });
 
 router.patch('/:userId', async (req, res) => {
+  const {userId} = req.params;
+  
   try {
-    const setting = await Settings.findOneAndUpdate({user_id: userId}, settings, { new: true });
+    const setting = await Settings.findOneAndUpdate({user_id: userId}, req.body, { new: true });
 
     if (!setting) {
       return res.status(404).json({ message: 'User not found' });
@@ -51,6 +53,7 @@ router.patch('/:userId', async (req, res) => {
     console.log('Settings updated at server')
     res.json({message: 'settings updated', setting});
   } catch (error) {
+    console.error(error)
     res.status(500).json({ message: 'Error updating settings', error });
   }
 });

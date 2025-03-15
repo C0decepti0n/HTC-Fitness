@@ -21,10 +21,16 @@ import {
   GlobalStyles,
   Button,
   ButtonGroup,
+  Stack
 } from '@mui/material';
 import {
   Stars,
   Circle,
+  Delete,
+  ChangeCircle,
+  Add,
+  CheckCircle,
+  CheckCircleOutline
 } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import axios from 'axios';
@@ -64,12 +70,12 @@ const Sleep = ({ user }) => {
   let date = new Date();
 date.setHours(9, 45, 0, 0); // Set hours to 9, minutes to 45, seconds and milliseconds to 0
 
-console.log(date.toTimeString().slice(0, 8)); // Output: "09:45"
+console.log(date.toTimeString().slice(0, 8)); // Output: '09:45'
 
 let dat2 = new Date();
 dat2.setHours(9, 45, 2, 4); // Set hours to 9, minutes to 45, seconds and milliseconds to 0
 
-console.log(dat2.toTimeString()); // Output: "09:45"
+console.log(dat2.toTimeString()); // Output: '09:45'
 
 
 
@@ -194,16 +200,25 @@ console.log(dat2.toTimeString()); // Output: "09:45"
         </Box>
         <Container maxWidth='lg'>
           <Box sx={{ bgcolor: '#cfe8fc', height: '10vh' }} />
-          <Card component={Paper} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgcolor: 'primary', fontSize: 90 }}>
+          <Card component={Paper} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgcolor: 'primary', fontSize: 50 }}>
             {/* <Typography variant='h1' textAlign='center'> */}
             <GlobalStyles styles={{ h1: { color: 'red' } }} />
             <h1>{`${sleepRecord.hours_slept}`}</h1>
             {sleepRecord.hours_slept}
             {/* </Typography> */}
+            <Box component={Card} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgColor: 'secondary' }}>
+              <Stack direction='row' spacing={2}>
+                <Chip label='Start Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
+                <Chip label='Stop Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
+                <Divider variant='middle' orientation='vertical' />
+                <Chip label='Update Current' variant='outlined' onClick={e => {console.log('foobar')}} />
+                <Chip label='Delete Current' variant='outlined' onClick={e => {console.log('foobar')}} />
+              </Stack>
+            </Box>
           </Card>
         </Container>
       </Box>
-      <Divider />
+      <Divider variant='middle' />
       <Box sx={{ p: 2 }}>
         <TableContainer component={Paper} variant='outlined'>
           <Table sx={{ minWidth: 700 }} aria-label='sleep records'>
@@ -241,7 +256,16 @@ console.log(dat2.toTimeString()); // Output: "09:45"
                     {resolveRating(sleepRecordObj.quality)}
                   </TableCell>
                   <TableCell align='right'>
-                    {resolveRating(sleepRecordObj.quality)}
+                    <ButtonGroup variant='contained' aria-label='quick select and delete'>
+                      <Button>
+                        <CheckCircleOutline fontSize='inherit' />
+                        Select
+                      </Button>
+                      <Button>
+                        <Delete fontSize='inherit' />
+                        Delete
+                      </Button>
+                    </ButtonGroup>
                   </TableCell>
                 </TableRow>
               ))}

@@ -119,5 +119,5 @@ router.delete('/:userId/:tipId', async (req, res) => {
         res.status(500).json({ message: 'Error deleting tips' });
     }
 });
-// comment 
+// comments 
 module.exports = router;

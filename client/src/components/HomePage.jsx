@@ -3,20 +3,42 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
+  Alert,
   Button,
+  Card, 
+  CardContent,
+  Dialog,
+  Stack,
+  TexttField,
+  SnackBar,
   Grid2,
   Typography,
   Tooltip,
   IconButton,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
+import dayjs from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers';
 import ExerciseCard from './ExerciseCard.jsx';
+import WeightCard from './WeightCard.jsx';
+import Goals from './Goals.jsx';
 
 
 const HomePage = ({ user, exercises, fetchRandomExercises }) => {
   // Preferred Name
   const [prefName, setPrefName] = useState('');
   const userName = prefName || user.nameFirst;
+    // State to store user-input weights
+  const [date, setDate] = useState(dayjs());
+  const [dateWeight, setDateWeight] = useState('');
+  const [weights, setWeights] = useState({
+    goalWeight: user.goal_weight || 0,
+    allWeights: user.weights || [],
+    currentWeight:
+      user.weights.length > 0
+        ? user.weights[user.weights.length - 1].weight
+        : 0,
+  });
 
   const navigate = useNavigate();
 
@@ -25,11 +47,25 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
 
  // Call fetch request on page load
  useEffect(() => {
-  getProfile();
+  getSettings();
+  if (user) {
+    // Sort the weights array by date in ascending order
+    const sortedWeights = (user.weights || [])
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    setWeights({
+      goalWeight: user.goal_weight || 0,
+      allWeights: sortedWeights || [],
+      currentWeight:
+        sortedWeights.length > 0
+          ? sortedWeights[sortedWeights.length - 1].weight
+          : 0,
+    });
+  };
 }, [])
 
-//* GET profile 
-const getProfile = async () => {
+//* GET Settings 
+const getSettings = async () => {
   try {
   const response = await axios.get(`/api/settings/${user._id}`);
   
@@ -45,7 +81,7 @@ const getProfile = async () => {
   }
 };
 
-console.log(dashboard);
+
 
 const createDefaultSettings = async () => {
   try {
@@ -55,16 +91,65 @@ const createDefaultSettings = async () => {
       user_id: user._id,
     });
     console.log('Default settings created', response.data);
-    getProfile();
+    getSettings();
 
   } catch (error) {
     console.log('failed on client to crate new user settings', error)
   }
 };
 
+
   const handleSettings = () => {
     navigate('/settings', { state: { from: 'home' } });
   };
+  // Snackbar state
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+
+  const handleAddDateWeight = async (date, weight) => {
+    try {
+      const newWeight = { weight, date: date.toISOString() };
+      // Check if the weight for the specific date already exists
+      const weightExists = weights.allWeights.some((entry) => dayjs(entry.date).isSame(date, 'day'));
+
+      // Update weights array based on existence check
+      const updatedWeights = weightExists
+        ? weights.allWeights.map((entry) => (dayjs(entry.date).isSame(date, 'day')
+          ? newWeight
+          : entry))
+        : [...weights.allWeights, newWeight];
+
+      // Sort the updated weights by date
+      const sortedWeights = updatedWeights
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Send updated weights to the backend
+      await axios.patch(`/api/users/${user._id}/weights`, {
+        weights: sortedWeights,
+      });
+
+      setWeights((prev) => ({
+        ...prev,
+        allWeights: updatedWeights,
+        currentWeight: updatedWeights[updatedWeights.length - 1].weight,
+      }));
+
+      const formattedDate = dayjs(date).format('MMMM D, YYYY');
+      setSnackbarMessage(`Added weight: ${weight} lbs. for ${formattedDate}`);
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
+    } catch (error) {
+      setSnackbarMessage('Failed to add weight.');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+    }
+  };
+
 
   return (
     <div>
@@ -88,10 +173,12 @@ const createDefaultSettings = async () => {
       <Typography variant="h4" gutterBottom align="center" marginTop="2rem">
       {`Welcome, ${userName}, to the Hyperbolic Time Chamber`}
       </Typography>
-      {/* Exercise Buttons */}
-      
-    <Grid2 aria-label='exercises' >
-        {(<Box display="flex" justifyContent="center" gap={2} margin="20px 0">
+     {/* Dashboard Elements */}
+    <Grid2 aria-label="dashboard">
+      {/*Conditional rendering */}
+    
+        {dashboard.includes('exerciseSuggestions') && (
+          <Box display="flex" justifyContent="center" gap={2} margin="20px 0">
           <Button
             variant='contained'
             color='primary'
@@ -129,6 +216,28 @@ const createDefaultSettings = async () => {
           <Typography variant="h6">
           Get Some Exercises!
         </Typography>
+        )}
+    {dashboard.includes('weightCard') && (
+          <Grid2 item xs={12} sm={6} md={4}>
+            <WeightCard 
+              userId={user._id}
+              weight={weights.currentWeight}
+              showInput={false}
+              title="Current Weight"
+              isCurrentWeightCard={true}
+              onAddDateWeight={handleAddDateWeight}
+               />
+            <Box
+              open={openSnackbar}
+              autoHideDuration={5000}
+              onClose={handleSnackbarClose}
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+              <Box onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                {snackbarMessage}
+              </Box>
+            </Box>
+          </Grid2>
         )}
     </Grid2>
     </div>

@@ -19,7 +19,7 @@ router.get('/:userId', async (req, res) => {
             return res.status(404).json({ message: "User tips not found" });
         }
 
-        // Now, fetch tips based on gender and intensity
+        // now fetch tips based on gender and intensity
         const tipsData = await Tips.findOne({
             gender: user.gender, 
             intensity: user.intensity 
@@ -55,7 +55,7 @@ router.post("/", async (req, res) => {
             {
                 $set: { gender, intensity, tips, disabled: false }
             },
-            { upsert: true } // Insert if it doesn't exist
+            { upsert: true } // insert if it doesntt exist
         );
 
         res.status(200).json({ message: "Tips updated successfully", data: updatedTips });
@@ -65,34 +65,33 @@ router.post("/", async (req, res) => {
     }
 });
 
+// update gender or intensity
 router.patch('/:userId', async (req, res) => {
     const { userId } = req.params;
-    const { intensity } = req.body;
+    const { gender, intensity } = req.body;
 
     try {
-        const updatedTips = await Tips.findOneAndUpdate(
+        if (!gender && intensity === undefined) {
+            return res.status(400).json({ message: "No valid fields to update" });
+        }
+
+        let updatedTips = await Tips.findOneAndUpdate(
             { userId },
-            { $set: { intensity } },
+            { $set: { gender, intensity } },
             { new: true }
         );
 
         if (!updatedTips) {
-            return res.status(404).json({ message: "Tips not found for this user" });
+            return res.status(404).json({ message: "User tips not found" });
         }
 
-        const tipsForLevel = await Tips.findOne({ gender: updatedTips.gender, intensity });
+        // fetch new tips based on updated gender & intensity
+        const newTips = await Tips.findOne({ gender, intensity });
 
-        if (!tipsForLevel || !tipsForLevel.tips.length) {
-            return res.status(404).json({ message: "No tips available for this intensity level" });
-        }
-
-        // pick a random tip from the updated intensity level
-        const randomTip = tipsForLevel.tips[Math.floor(Math.random() * tipsForLevel.tips.length)];
-
-        res.json({ intensity: updatedTips.intensity, tip: randomTip });
+        res.json({ message: "Updated successfully", newTips });
     } catch (error) {
-        console.error("Error updating intensity:", error);
-        res.status(500).json({ message: "Server error updating intensity" });
+        console.error("Error updating gender/intensity:", error);
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -101,7 +100,7 @@ router.delete('/:userId/:tipId', async (req, res) => {
     const { userId, tipId } = req.params;
 
     try {
-        // validate that user existence
+        // validate that the user exists
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

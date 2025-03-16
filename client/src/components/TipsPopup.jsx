@@ -5,17 +5,18 @@ import axios from 'axios';
 const TipsPopup = ({ userId }) => {
     const [tip, setTip] = useState("");
     const [intensity, setIntensity] = useState(1);
+    const [gender, setGender] = useState("male"); // default gender
     const [open, setOpen] = useState(true);
 
-    // fetch the tip on mount & when intensity changes
+    // fetch the tip on mount & when intensity or gender changes
     useEffect(() => {
         if (userId) {
             fetchTips();
             setOpen(true);
         }
-    }, [userId, intensity]);
+    }, [userId, intensity, gender]);
 
-    // fetch the tips based on userId
+    // fetch tips from API
     const fetchTips = async () => {
         try {
             console.log("Fetching tips for userId:", userId);
@@ -27,11 +28,10 @@ const TipsPopup = ({ userId }) => {
             const response = await axios.get(`/api/tips/${userId}`);
             console.log("API Response:", response.data);
 
-            if (response.data && response.data.tip) {
-                setTip(response.data.tip); // set the fetched tip
-                setIntensity(response.data.intensity || 1); // set intensity
-            } else {
-                setTip("No tips available for this level.");
+            if (response.data) {
+                setTip(response.data.tip || "No tips available for this level.");
+                setIntensity(response.data.intensity || 1);
+                setGender(response.data.gender || "male"); // make sure the gender syncs
             }
         } catch (error) {
             console.error('Error fetching tips:', error);
@@ -39,7 +39,7 @@ const TipsPopup = ({ userId }) => {
         }
     };
 
-    // update the intensity & fetch a new tip
+    // increase intensity & fetch new tip
     const updateIntensity = async () => {
         if (intensity < 7) {
             try {
@@ -48,11 +48,24 @@ const TipsPopup = ({ userId }) => {
 
                 console.log("Updated intensity:", response.data);
                 setIntensity(newIntensity);
-
-                fetchTips(); // fetch new tip immediately!!!!
+                fetchTips(); // fetch new tip immediately!!!
             } catch (error) {
                 console.error('Error updating intensity:', error);
             }
+        }
+    };
+
+    // toggle gender & update backend
+    const updateGender = async () => {
+        const newGender = gender === "male" ? "female" : "male";
+        try {
+            const response = await axios.patch(`/api/tips/${userId}`, { gender: newGender });
+
+            console.log("Updated gender:", response.data);
+            setGender(newGender);
+            fetchTips(); // fetch new tip immediately after gender change!!
+        } catch (error) {
+            console.error('Error updating gender:', error);
         }
     };
 
@@ -67,6 +80,17 @@ const TipsPopup = ({ userId }) => {
                 </Typography>
 
                 <Typography variant="body2">Current Intensity: {intensity}</Typography>
+
+                <Box mt={2}>
+                    {/* Gender Toggle Button */}
+                    {/* <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={updateGender}
+                    >
+                        Switch to {gender === "male" ? "Female" : "Male"}
+                    </Button> */}
+                </Box>
 
                 <Box mt={2}>
                     {/* Increase Intensity Button (Disable at max level 7) */}

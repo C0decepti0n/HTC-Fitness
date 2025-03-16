@@ -9,10 +9,10 @@ const Profile = ({ user }) => {
   console.log(user)
     //* States *//
     const [gender, setGender] = useState('');
-    const [intensity, setIntensity] = useState(3); // Default intensity
-    const [tipsEnabled, setTipsEnabled] = useState(true); // Track tips feature
+    const [intensity, setIntensity] = useState(3); // default intensity
+    const [tipsEnabled, setTipsEnabled] = useState(true); // track tips feature
 
-    //* Fetch user profile data from backend on page load *//
+    //* Fetch user profile data from backend when page load *//
     useEffect(() => {
         if (user?._id) {
             getProfile();
@@ -25,7 +25,7 @@ const Profile = ({ user }) => {
             if (response.data) {
                 setGender(response.data.gender || '');
                 setIntensity(response.data.intensity || 3);
-                setTipsEnabled(response.data.tipsEnabled !== false); // Default true
+                setTipsEnabled(response.data.tipsEnabled !== false); 
             }
         } catch (err) {
             console.error('Failed to fetch user data', err);

@@ -24,6 +24,7 @@ import Reminders from './ReminderCard.jsx';
 import Settings from './Settings.jsx';
 import Profile from './Profile.jsx';
 
+
 const lightTheme = createTheme({
   palette: {
     mode: 'light',
@@ -151,7 +152,11 @@ const App = () => {
                 <Profile user={userProfile} />
               </ProtectedRoute>
             } />
-          </Routes>
+         
+         
+         
+         
+          </Routes> 
         </Router>
       </ThemeProvider>
     </LocalizationProvider>

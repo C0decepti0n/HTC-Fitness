@@ -19,11 +19,9 @@ const settingsRouter = require('./routes/settings');
 const routinesRouter = require('./routes/Routine');
 const { User } = require('./db');
 
-// const { Reminder } = require('./db');
 
-
-
-
+//update routes
+const routinesRouter = require('./routes/Routine.js');
 
 
 dotenv.config({
@@ -42,7 +40,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/HTC-Fitness')
     .catch((err) => {
         console.error('Error connecting to MongoDB:', err.message);
     });
-
+    
 app.use(express.json());
 app.use(express.static(DIST_DIR));
 
@@ -52,6 +50,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 }));
+
 
 // Initialize Passport for google
 app.use(passport.initialize());

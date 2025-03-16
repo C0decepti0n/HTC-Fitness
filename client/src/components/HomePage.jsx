@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExerciseCard from './ExerciseCard.jsx';
-import Settings from './Settings.jsx'
 
 
 const HomePage = ({ user, exercises, fetchRandomExercises }) => {
@@ -22,7 +21,7 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
   const navigate = useNavigate();
 
   //* usersettings
-  const [settings, setSettings] = useState([]);
+  const [dashboard, setDashboard] = useState([]);
 
  // Call fetch request on page load
  useEffect(() => {
@@ -30,20 +29,23 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
 }, [])
 
 //* GET profile 
-const getProfile = () => {
-  axios.get(`/api/settings/${user._id}`)
-  .then((response) => {
-    if(response.data && response.data.length > 0) {
+const getProfile = async () => {
+  try {
+  const response = await axios.get(`/api/settings/${user._id}`);
+  
+    if (response.data && response.data.length > 0) {
       setPrefName(response.data[0].prefName);
+      setDashboard(response.data[0].dashboard);
+      
     } else {
       createDefaultSettings()
     }
-
-  })
-  .catch((err) => {
+  } catch(err) {
     console.log('Failed to find user data', err)
-  })
+  }
 };
+
+console.log(dashboard);
 
 const createDefaultSettings = async () => {
   try {
@@ -56,7 +58,7 @@ const createDefaultSettings = async () => {
     getProfile();
 
   } catch (error) {
-    console.log('failed on client to crate new user settigns', error)
+    console.log('failed on client to crate new user settings', error)
   }
 };
 
@@ -87,7 +89,7 @@ const createDefaultSettings = async () => {
       {`Welcome, ${userName}, to the Hyperbolic Time Chamber`}
       </Typography>
       {/* Exercise Buttons */}
-      {}
+      
     <Grid2 aria-label='exercises' >
         {(<Box display="flex" justifyContent="center" gap={2} margin="20px 0">
           <Button

@@ -50,10 +50,9 @@ const Settings = ({ user }) => {
         const response = await axios.get(`/api/settings/${user._id}`);
         //* preferred name box *//
         setPrefName(response.data[0].prefName || '');
-        console.log(prefName);
         //* dashboard checks *//
         const dashboardSettings = response.data[0].dashboard;
-        setDashboard(dashboardSettings)
+        setDashboard(dashboardSettings);
         setSelectedBoxes({
           exerciseSuggestions: dashboardSettings.includes('exerciseSuggestions'),
           weightCard: dashboardSettings.includes('weightCard'),

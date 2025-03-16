@@ -21,8 +21,7 @@ const { User } = require('./db');
 
 
 //update routes
-const routinesRouter = require('./routes/Routine.js');
-
+// const routinesRouter = require('./routes/Routine.js');
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),

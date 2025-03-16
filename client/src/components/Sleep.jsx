@@ -21,7 +21,8 @@ import {
   Slider,
   Button,
   ButtonGroup,
-  Stack
+  Stack,
+  TextField
 } from '@mui/material';
 import {
   Stars,
@@ -55,7 +56,6 @@ const Sleep = ({ user }) => {
     sleep_aid: 'none',
     disturbances: 0,
     disturbance_notes: 'none',
-    day: null,
     begin_sleep: null,
     stop_sleep: null,
   }
@@ -70,6 +70,14 @@ const Sleep = ({ user }) => {
   console.log(user);
 
   console.log(Date.now());
+
+  console.log('dayjs');
+  console.log(dayjs());
+
+  const currentDateyy = dayjs();
+const formattedDateyy = currentDateyy.format('YYYY-MM-DD HH:mm:ss');
+console.log(formattedDateyy);
+
 
   let date = new Date();
 date.setHours(9, 45, 0, 0); // Set hours to 9, minutes to 45, seconds and milliseconds to 0
@@ -120,6 +128,10 @@ console.log(dat2.toTimeString()); // Output: '09:45'
     }
   }, [sleepRecords]);
 
+  useEffect(() => {
+    console.log('bihc');
+  }, [fieldValues]);
+
   // GET sleep records
   const getSleepRecords = () => {
     axios.get(`/api/sleep/${user._id}`)
@@ -136,6 +148,8 @@ console.log(dat2.toTimeString()); // Output: '09:45'
 
   // POST new sleep record
   const postSleepRecord = () => {
+    const copy = {...defaultRecord};
+
     axios.post(`/api/sleep/${user._id}`, {})
     .then(newSleepRecordObj => {
       console.log('POST');
@@ -196,6 +210,16 @@ console.log(dat2.toTimeString()); // Output: '09:45'
     }
   }
 
+  // updates the corresponding property in the fieldValues state when an input field is interacted with
+  const updateFieldInputs = (type, val) => {
+    console.log(fieldValues);
+    setFieldValues(currentFieldValues => {
+      const copy = {...currentFieldValues};
+      copy[type] = val;
+      return copy;
+    })
+  }
+
   return (
     <div>
       <Box sx={{ p: 2 }}>
@@ -204,28 +228,67 @@ console.log(dat2.toTimeString()); // Output: '09:45'
         </Box>
         <Container maxWidth='lg'>
           <Box sx={{ bgcolor: '#cfe8fc', height: '10vh' }} />
-          <Card component={Card} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgcolor: 'primary', fontSize: 30 }}>
+          <Card component={Card} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgcolor: 'primary' }}>
             {/* Display the "time slept" for the current sleepRecord */}
-            <Typography variant='h1' textAlign='center' color={sleepRecord.stop_sleep ? 'white' : 'gray'}>
+            <Typography variant='h1' textAlign='center' fontSize={90} color={sleepRecord.stop_sleep ? 'white' : 'gray'}>
               {sleepRecord.hours_slept}
             </Typography>
             <Divider />
             <Box component={Paper} variant='outlined'>
               <Stack direction='column' spacing={5}>
                 <Box display="flex">
-                  Goal (Hours):
+                  Goal (Hours):&nbsp;
                   <Typography color='gray'>
-                    {fieldValues.goal}
+                    {fieldValues.goal}&nbsp;
                   </Typography>
-                  <Slider valueLabelDisplay="auto" defaultValue={8} step={1} marks min={0} max={24}/>
+                  <Slider valueLabelDisplay="auto" value={fieldValues.goal} step={1} marks min={0} max={24} onChange={e => {updateFieldInputs('goal', e.target.value)}} />
                 </Box>
                 <Box display="flex">
-                  <PlayArrow fontSize='inherit' />
-                  <Chip label='Start Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
+                  Time Slept (HH:MM:SS):&nbsp;
+                  <Typography color='gray'>
+                    {fieldValues.hours_slept}&nbsp;
+                  </Typography>
+                  <TextField label="Insert time you slept (HH:MM:SS)" variant="outlined" value={fieldValues.hours_slept} onChange={e => {updateFieldInputs('hours_slept', e.target.value)}} />
+                </Box>
+                <Box display="flex">
+                  Sleep Aid:&nbsp;
+                  <Typography color='gray'>
+                    {fieldValues.sleep_aid}&nbsp;
+                  </Typography>
+                  <TextField label="Describe items used to help you sleep" variant="outlined" value={fieldValues.sleep_aid} onChange={e => {updateFieldInputs('sleep_aid', e.target.value)}} />
+                </Box>
+                <Box display="flex">
+                  Disturbance Count:&nbsp;
+                  <Typography color='gray'>
+                    {fieldValues.disturbances}&nbsp;
+                  </Typography>
+                  <Slider valueLabelDisplay="auto" value={fieldValues.disturbances} step={1} marks min={0} max={10} onChange={e => {updateFieldInputs('disturbances', e.target.value)}} />
+                  {/* <TextField label="Insert number of disturbances" variant="outlined" value={fieldValues.disturbances} onChange={e => {updateFieldInputs('disturbances', e.target.value)}} /> */}
+                </Box>
+                <Box display="flex">
+                  Time Sleep Began:&nbsp;
+                  <Typography color='gray'>
+                    {fieldValues.begin_sleep}&nbsp;
+                  </Typography>
+                  <TextField label="Insert time when sleep began" variant="outlined" value={fieldValues.begin_sleep} onChange={e => {updateFieldInputs('begin_sleep', e.target.value)}} />
+                </Box>
+                <Box display="flex">
+                  Time Sleep Ended:&nbsp;
+                  <Typography color='gray'>
+                    {fieldValues.stop_sleep}&nbsp;
+                  </Typography>
+                  <TextField label="Insert time when sleep ended" variant="outlined" value={fieldValues.stop_sleep} onChange={e => {updateFieldInputs('stop_sleep', e.target.value)}} />
+                </Box>
+                <Box display="flex">
+                  Disturbance Notes:&nbsp;
+                  <Typography color='gray'>
+                    {fieldValues.disturbance_notes}&nbsp;
+                  </Typography>
+                  <TextField label="Describe sleep disturbances" variant="outlined" value={fieldValues.disturbance_notes} onChange={e => {updateFieldInputs('disturbance_notes', e.target.value)}} />
                 </Box>
               </Stack>
             </Box>
-            <Box component={Paper} variant='outlined' display="flex" justifyContent="center" alignItems="center" sx={{ minWidth: 300, maxWidth: 'lg' }}>
+            <Box component={Paper} variant='outlined' display="flex" justifyContent="center" alignItems="center" fontSize={30} sx={{ minWidth: 300, maxWidth: 'lg' }}>
               <Stack direction='row' spacing={5}>
                 <Box display="flex">
                   <PlayArrow fontSize='inherit' />
@@ -257,7 +320,7 @@ console.log(dat2.toTimeString()); // Output: '09:45'
             <TableHead>
               <TableRow>
                 <TableCell>Day</TableCell>
-                <TableCell align='right'>Time Slept (H:M:S)</TableCell>
+                <TableCell align='right'>Time Slept (HH:MM:SS)</TableCell>
                 <TableCell align='right'>Hours Goal</TableCell>
                 <TableCell align='right'>Disturbances</TableCell>
                 <TableCell align='right'>Disturbance Notes</TableCell>

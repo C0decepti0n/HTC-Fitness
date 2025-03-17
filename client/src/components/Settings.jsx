@@ -166,7 +166,7 @@ const resetPref = async () => {
           Dashboard Settings
         </Typography>
         <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
-            <CustomTextField
+            <TextField
               id={textFieldId}
               label="Preferred Name"
               value={prefName}

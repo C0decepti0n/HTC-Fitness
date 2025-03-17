@@ -48,6 +48,11 @@ const Sleep = ({ user }) => {
   // (prevents an infinite loop that is caused when sleepRecords is empty)
   const [stopRecordsRenderLoop, setStopRecordsRenderLoop] = useState(false);
 
+  // create a state that will increase by 1 each time it is updated, allowing it to approximately give you the
+  // amount of seconds since the Sleep Tracker page was opened. This state will be updated on startup and every
+  // second after that, allowing timers to be constantly updated by it
+  const [masterTimer, setMasterTimer] = useState(0);
+
   // create a default sleep record with default values to reference for filling out field values and for axios requests
   const defaultRecord = {
     quality: null,
@@ -60,8 +65,13 @@ const Sleep = ({ user }) => {
     stop_sleep: null,
   }
 
-  // create a state to keep track of the field values that will be used in POST and PATCH requests
-  const [fieldValues, setFieldValues] = useState({...defaultRecord});
+  // create a state to keep track of the field values that will be used in PATCH requests
+  // insert pre_goal and pre_sleep_aid properties to keep track of field values used in POST requests
+  const [fieldValues, setFieldValues] = useState({
+    pre_goal: 8,
+    pre_sleep_aid: 'none',
+    ...defaultRecord
+  });
 
 
 
@@ -101,7 +111,7 @@ console.log(dat2.toTimeString()); // Output: '09:45'
   //////TEST end//////////////////////////////////////
 
 
-
+  // run on startup and whenever sleepRecords is changed
   useEffect(() => {
     // if sleepRecords is empty and the stopRecordsRenderLoop state/flag hasn't been tripped yet
     if(sleepRecords.length === 0 && !stopRecordsRenderLoop) {
@@ -128,9 +138,13 @@ console.log(dat2.toTimeString()); // Output: '09:45'
     }
   }, [sleepRecords]);
 
+  // run on startup and whenever masterTimer is changed
   useEffect(() => {
-    console.log('bihc');
-  }, [fieldValues]);
+    setTimeout(() => {
+      console.log('amongus');
+      setMasterTimer(masterTimer + 1);
+    }, 1000);
+  }, [masterTimer]);
 
   // GET sleep records
   const getSleepRecords = () => {
@@ -146,11 +160,20 @@ console.log(dat2.toTimeString()); // Output: '09:45'
     });
   }
 
-  // POST new sleep record
+  // POST new (unfinished) sleep record
   const postSleepRecord = () => {
-    const copy = {...defaultRecord};
+    // create copy of defaultRecord object and name it 'input'
+    const input = {...defaultRecord};
 
-    axios.post(`/api/sleep/${user._id}`, {})
+    // Replace the goal and sleep_aid properties with values from the 'pre' properties in the input fields
+    input.goal = fieldValues.pre_goal;
+    input.sleep_aid = fieldValues.pre_sleep_aid;
+
+    // use current date for begin_sleep
+    input.begin_sleep = dayjs();
+
+    // use the input object to make a new sleep record
+    axios.post(`/api/sleep/${user._id}`, input)
     .then(newSleepRecordObj => {
       console.log('POST');
       console.log(newSleepRecordObj);
@@ -163,7 +186,23 @@ console.log(dat2.toTimeString()); // Output: '09:45'
   }
 
   // PATCH new sleep record
-  const patchSleepRecord = () => {
+  const patchSleepRecord = (isResultOfStopTimer) => {
+    // create an empty object and name it 'input'
+    const input = {};
+
+    // if patchSleepRecord was the result of stopping the sleep timer, then patch only the stop_sleep property
+    if (isResultOfStopTimer) {
+      // assign current date to input as the value of stop_sleep
+      input.stop_sleep = dayjs();
+    } else {
+      // otherwise, loop through the field values
+      for (let key in fieldValues) {
+        if (fieldValues[key] === '') {
+
+        }
+      }
+    }
+
     axios.patch(`/api/sleep/${user._id}/${sleepRecord._id}`, {})
     .then(oldSleepRecordObj => {
       console.log('PATCH');
@@ -177,8 +216,9 @@ console.log(dat2.toTimeString()); // Output: '09:45'
   }
 
   // DELETE sleep record
-  const deleteSleepRecord = () => {
-    axios.delete(`/api/sleep/${user._id}/${sleepRecord._id}`)
+  const deleteSleepRecord = (id) => {
+    // delete the sleep record associated with the given input id
+    axios.delete(`/api/sleep/${user._id}/${id}`)
     .then(deletedSleepRecordsObj => {
       console.log('DELETE');
       console.log(deletedSleepRecordsObj);
@@ -235,6 +275,44 @@ console.log(dat2.toTimeString()); // Output: '09:45'
             </Typography>
             <Divider />
             <Box component={Paper} variant='outlined'>
+              <Typography variant='h3' textAlign='center'>
+                Inputs for New Sleep Record
+              </Typography>
+              <Stack direction='column' spacing={5}>
+                <Box display="flex">
+                  Goal (Hours):&nbsp;
+                  <Typography color='gray'>
+                    {fieldValues.pre_goal}&nbsp;
+                  </Typography>
+                  <Slider valueLabelDisplay="auto" value={fieldValues.pre_goal} step={1} marks min={0} max={24} onChange={e => {updateFieldInputs('pre_goal', e.target.value)}} />
+                </Box>
+                <Box display="flex">
+                  Sleep Aid:&nbsp;
+                  <Typography color='gray'>
+                    {fieldValues.pre_sleep_aid}&nbsp;
+                  </Typography>
+                  <TextField label="Describe items used to help you sleep" variant="outlined" value={fieldValues.pre_sleep_aid} onChange={e => {updateFieldInputs('pre_sleep_aid', e.target.value)}} />
+                </Box>
+              </Stack>
+            </Box>
+            <Box component={Paper} variant='outlined' display="flex" justifyContent="center" alignItems="center" fontSize={30} sx={{ minWidth: 300, maxWidth: 'lg' }}>
+              <Stack direction='row' spacing={5}>
+                <Box display="flex">
+                  <PlayArrow fontSize='inherit' />
+                  <Chip label='Start Sleep Timer' variant='outlined' onClick={postSleepRecord} />
+                </Box>
+                <Divider variant='middle' orientation='vertical' flexItem />
+                <Box display="flex">
+                  <Stop fontSize='inherit' />
+                  <Chip label='Stop Sleep Timer' variant='outlined' onClick={() => {patchSleepRecord(true)}} />
+                </Box>
+              </Stack>
+            </Box>
+            <Divider />
+            <Box component={Paper} variant='outlined'>
+              <Typography variant='h3' textAlign='center'>
+                Inputs for Selected Sleep Record
+              </Typography>
               <Stack direction='column' spacing={5}>
                 <Box display="flex">
                   Goal (Hours):&nbsp;
@@ -291,21 +369,13 @@ console.log(dat2.toTimeString()); // Output: '09:45'
             <Box component={Paper} variant='outlined' display="flex" justifyContent="center" alignItems="center" fontSize={30} sx={{ minWidth: 300, maxWidth: 'lg' }}>
               <Stack direction='row' spacing={5}>
                 <Box display="flex">
-                  <PlayArrow fontSize='inherit' />
-                  <Chip label='Start Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
-                </Box>
-                <Box display="flex">
-                  <Stop fontSize='inherit' />
-                  <Chip label='Stop Sleep Timer' variant='outlined' onClick={e => {console.log('foobar')}} />
-                </Box>
-                <Divider variant='middle' orientation='vertical' flexItem />
-                <Box display="flex">
                   <ChangeCircle fontSize='inherit' />
                   <Chip label='Update Current' variant='outlined' onClick={e => {console.log('foobar')}} />
                 </Box>
+                <Divider variant='middle' orientation='vertical' flexItem />
                 <Box display="flex">
                   <Delete fontSize='inherit' />
-                  <Chip label='Delete Current' variant='outlined' onClick={e => {console.log('foobar')}} />
+                  <Chip label='Delete Current' variant='outlined' onClick={() => {deleteSleepRecord(sleepRecord._id)}} />
                 </Box>
               </Stack>
             </Box>
@@ -338,25 +408,25 @@ console.log(dat2.toTimeString()); // Output: '09:45'
                   sx={{ '&:last-child th': { border: 0 } }}
                 >
                   <TableCell component='th' scope='row'>
-                    {sleepRecordObj.day}
+                    {dayjs(sleepRecordObj.begin_sleep).format('YYYY-MM-DD')}
                   </TableCell>
                   <TableCell align='right'>{sleepRecordObj.hours_slept}</TableCell>
                   <TableCell align='right'>{sleepRecordObj.goal}</TableCell>
                   <TableCell align='right'>{sleepRecordObj.disturbances}</TableCell>
                   <TableCell align='right'>{sleepRecordObj.disturbance_notes}</TableCell>
                   <TableCell align='right'>{sleepRecordObj.sleep_aid}</TableCell>
-                  <TableCell align='right'>{sleepRecordObj.begin_sleep.toLocaleString()}</TableCell>
-                  <TableCell align='right'>{sleepRecordObj.stop_sleep}</TableCell>
+                  <TableCell align='right'>{dayjs(sleepRecordObj.begin_sleep).format('YYYY-MM-DD hh:mm:ss A')}</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.stop_sleep ? dayjs(sleepRecordObj.stop_sleep).format('YYYY-MM-DD hh:mm:ss A') : 'not set' }</TableCell>
                   <TableCell align='right'>
                     {resolveRating(sleepRecordObj.quality)}
                   </TableCell>
                   <TableCell align='right'>
                     <ButtonGroup variant='contained' aria-label='quick select and delete'>
-                      <Button>
+                      <Button onClick={() => {setSleepRecord(sleepRecordObj)}}>
                         {sleepRecordObj._id === sleepRecord._id ? <CheckCircle fontSize='inherit' /> : <CheckCircleOutline fontSize='inherit' /> }
                         Select
                       </Button>
-                      <Button>
+                      <Button onClick={() => {deleteSleepRecord(sleepRecordObj._id)}}>
                         <Delete fontSize='inherit' />
                         Delete
                       </Button>

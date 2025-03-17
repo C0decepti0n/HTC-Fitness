@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Dialog } from '@mui/material';
 import axios from 'axios';
 
-const TipsPopup = ({ userId }) => {
+const TipsPopup = ({ userId, tipsEnabled, setTipsEnabled }) => {
     const [tip, setTip] = useState("");
     const [intensity, setIntensity] = useState(1);
-    const [gender, setGender] = useState("male"); // default gender
-    const [open, setOpen] = useState(true);
+    const [gender, setGender] = useState("male");
+    const [open, setOpen] = useState(false);
 
-    // fetch the tip on mount & when intensity or gender changes
     useEffect(() => {
-        if (userId) {
+        if (userId && tipsEnabled) {
             fetchTips();
             setOpen(true);
+        } else {
+            setOpen(false);
         }
-    }, [userId, intensity, gender]);
+    }, [userId, tipsEnabled]);
 
-    // fetch tips from API
     const fetchTips = async () => {
         try {
             console.log("Fetching tips for userId:", userId);
@@ -31,50 +31,51 @@ const TipsPopup = ({ userId }) => {
             if (response.data) {
                 setTip(response.data.tip || "No tips available for this level.");
                 setIntensity(response.data.intensity || 1);
-                setGender(response.data.gender || "male"); // make sure the gender syncs
+                setGender(response.data.gender || "male");
+                setTipsEnabled(true);
             }
         } catch (error) {
             console.error('Error fetching tips:', error);
-            setTip("Error loading tips.");
         }
     };
 
-    // increase intensity & fetch new tip
     const updateIntensity = async () => {
         if (intensity < 7) {
             try {
                 const newIntensity = intensity + 1;
-                const response = await axios.patch(`/api/tips/${userId}`, { intensity: newIntensity });
+                await axios.patch(`/api/tips/${userId}`, { intensity: newIntensity });
 
-                console.log("Updated intensity:", response.data);
                 setIntensity(newIntensity);
-                fetchTips(); // fetch new tip immediately!!!
+                fetchTips();
             } catch (error) {
                 console.error('Error updating intensity:', error);
             }
         }
     };
 
-    // toggle gender & update backend
-    const updateGender = async () => {
-        const newGender = gender === "male" ? "female" : "male";
-        try {
-            const response = await axios.patch(`/api/tips/${userId}`, { gender: newGender });
+    const deleteTips = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete your workout tips?");
+        if (!confirmDelete) return;
 
-            console.log("Updated gender:", response.data);
-            setGender(newGender);
-            fetchTips(); // fetch new tip immediately after gender change!!
+        try {
+            console.log("Deleting tips for userId:", userId);
+            await axios.delete(`/api/tips/${userId}`);
+
+            setTipsEnabled(false);
+            setOpen(false);
+            console.log("Tips deleted successfully.");
         } catch (error) {
-            console.error('Error updating gender:', error);
+            console.error("Error deleting tips:", error);
         }
     };
+
+    if (!tipsEnabled) return null;
 
     return (
         <Dialog open={open} onClose={() => setOpen(false)}>
             <Box p={3} textAlign="center">
                 <Typography variant="h6">Daily Workout Tip</Typography>
 
-                {/* Display one random tip */}
                 <Typography variant="body1" mt={2}>
                     {tip || "Loading tips..."}
                 </Typography>
@@ -82,18 +83,6 @@ const TipsPopup = ({ userId }) => {
                 <Typography variant="body2">Current Intensity: {intensity}</Typography>
 
                 <Box mt={2}>
-                    {/* Gender Toggle Button */}
-                    {/* <Button 
-                        variant="contained" 
-                        color="secondary" 
-                        onClick={updateGender}
-                    >
-                        Switch to {gender === "male" ? "Female" : "Male"}
-                    </Button> */}
-                </Box>
-
-                <Box mt={2}>
-                    {/* Increase Intensity Button (Disable at max level 7) */}
                     <Button 
                         variant="contained" 
                         color="primary" 
@@ -101,6 +90,14 @@ const TipsPopup = ({ userId }) => {
                         disabled={intensity >= 7}
                     >
                         Increase Intensity
+                    </Button>
+
+                    <Button 
+                        variant="contained" 
+                        color="error" 
+                        onClick={deleteTips}
+                    >
+                        Delete Tips
                     </Button>
 
                     <Button 

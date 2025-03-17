@@ -58,5 +58,17 @@ router.patch('/:userId', async (req, res) => {
   }
 });
 
+router.delete('/:userId', async (req, res) => {
+  const {userId} = req.params; 
+  
+  try {
+    const settings = await Settings.deleteOne({user_id: userId});
+    console.log('reset server success');
+    res.json({message: 'user settings reset at server'})
 
+  } catch (error) {
+    console.error('reset server', error);
+    res.status(500).json({ message: 'Server could not process reset request', error });
+  }
+});
 module.exports = router;

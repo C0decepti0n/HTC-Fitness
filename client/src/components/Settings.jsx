@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
@@ -6,7 +7,11 @@ import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Chip from '@mui/material/Chip';
 import { styled, useTheme } from '@mui/material/styles';
 
 const CustomTextField = styled(TextField)({
@@ -33,6 +38,8 @@ const Settings = ({ user }) => {
   const [editing, setEditing] = useState(false)
   const [prefName, setPrefName] = useState('');
   const userName = prefName || user.nameFirst;
+  const [open, setOpen] = useState(false) // name reset dialog
+
   // Dashboard Settings
   const [dashboard, setDashboard] = useState([]);
   // Dashboard Preferences
@@ -92,6 +99,14 @@ const Settings = ({ user }) => {
     setPrefName(e.target.value);
   }
 
+  const openDialog = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+  }
+  
   //* PATCH request to server for client's preferences
   const patchData = async (setting, isChecked) => {
     try {
@@ -121,7 +136,22 @@ const Settings = ({ user }) => {
     }
   };
 
+const navigate = useNavigate()
 
+const handleCancel = () => {
+  handleClose();
+}
+
+const resetPref = async () => {
+  handleClose();
+  try {
+    const response = await axios.delete(`/api/settings/${user._id}`);
+    console.log('preferences reset');
+    navigate('/', { state: {from: 'settings'}});
+  } catch (error) {
+    console.error('Failed to reset preferences from client side', error);
+  }
+}
 
 
 
@@ -156,6 +186,7 @@ const Settings = ({ user }) => {
               >
                 {buttonText}
             </Button>
+            
           </Box>
           <FormControlLabel
             control={
@@ -177,6 +208,18 @@ const Settings = ({ user }) => {
             }
             label="Weight"
           />
+      </Box>
+      <Divider/>
+      <Box>
+        <Chip label="Reset Preferences" onClick={openDialog}/>
+        <Dialog onClose={handleClose} open={open}> 
+          <DialogTitle>Reset Preferences</DialogTitle>
+            <Typography>This will reset your preferences to Default</Typography>
+            <ButtonGroup variant="contained">
+              <Button color="red" onClick={resetPref}>Yes, reset</Button>
+              <Button color="Blue" onClick={handleClose}>Cancel</Button>
+            </ButtonGroup>
+        </Dialog>
       </Box>
     </Box>
   );

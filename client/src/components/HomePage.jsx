@@ -27,12 +27,12 @@ import Goals from './Goals.jsx';
 const HomePage = ({ user, exercises, fetchRandomExercises }) => {
   // Preferred Name
   const [prefName, setPrefName] = useState('');
-  const userName = prefName || user.nameFirst;
+  // const userName = prefName || user.nameFirst;
     // State to store user-input weights
   const [date, setDate] = useState(dayjs());
   const [dateWeight, setDateWeight] = useState('');
   const [weights, setWeights] = useState({
-    goalWeight: user.goal_weight || 0,
+    // goalWeight: user.goal_weight || 0,
     allWeights: user.weights || [],
     currentWeight:
       user.weights.length > 0
@@ -54,7 +54,7 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     setWeights({
-      goalWeight: user.goal_weight || 0,
+      // goalWeight: user.goal_weight || 0,
       allWeights: sortedWeights || [],
       currentWeight:
         sortedWeights.length > 0
@@ -171,7 +171,7 @@ const createDefaultSettings = async () => {
       </Grid2>
       {/* Welcome Text */}
       <Typography variant="h4" gutterBottom align="center" marginTop="2rem">
-      {`Welcome, ${userName}, to the Hyperbolic Time Chamber`}
+      {`Welcome, ${prefName}, to the Hyperbolic Time Chamber`}
       </Typography>
      {/* Dashboard Elements */}
     <Grid2 aria-label="dashboard">

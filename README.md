@@ -56,6 +56,7 @@
 
 # Known Bugs
   - Navigated pages do not render after the browser page refreshes.
+  - Changing (patching) a sleep record via the "Time Slept" property doesn't update the value gotten from Master Timer due to the Master Timer only utilizing the start date and end date of the sleep record. (Best course of action may be to remove or alter the method of the ability to alter the hours_slept property via. patch requests)
 
 # Contributors
   - Adonijah Johnson Jr [Github](https://github.com/AJ-Gamer)

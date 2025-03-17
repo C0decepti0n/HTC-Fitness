@@ -36,8 +36,6 @@ import {
 } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import axios from 'axios';
-// import Chart from './Chart.jsx';
-// import WeightCard from './WeightCard.jsx';
 
 const Sleep = ({ user }) => {
   // create states for the sleep records table and the main sleep record to be displayed
@@ -48,10 +46,10 @@ const Sleep = ({ user }) => {
   // (prevents an infinite loop that is caused when sleepRecords is empty)
   const [stopRecordsRenderLoop, setStopRecordsRenderLoop] = useState(false);
 
-  // create a state that will increase by 1 each time it is updated, allowing it to approximately give you the
-  // amount of seconds since the Sleep Tracker page was opened. This state will be updated on startup and every
-  // second after that, allowing timers to be constantly updated by it
-  const [masterTimer, setMasterTimer] = useState(0);
+  // create a state that will be the time since the start of the timer on the current sleep record, allowing it to approximately give you the
+  // amount of time since the current sleep record started its timer. This state will be updated on startup and every
+  // second after that, allowing for real-time time tracking.
+  const [masterTimer, setMasterTimer] = useState('0:0:0');
 
   // create a default sleep record with default values to reference for filling out field values and for axios requests
   const defaultRecord = {
@@ -73,44 +71,6 @@ const Sleep = ({ user }) => {
     ...defaultRecord
   });
 
-
-
-  //////TEST start//////////////////////////////////////
-
-  console.log(user);
-
-  console.log(Date.now());
-
-  console.log('dayjs');
-  console.log(dayjs());
-
-  const currentDateyy = dayjs();
-const formattedDateyy = currentDateyy.format('YYYY-MM-DD HH:mm:ss');
-console.log(formattedDateyy);
-
-
-  let date = new Date();
-date.setHours(9, 45, 0, 0); // Set hours to 9, minutes to 45, seconds and milliseconds to 0
-
-console.log(date.toTimeString().slice(0, 8)); // Output: '09:45'
-
-let dat2 = new Date();
-dat2.setHours(9, 45, 2, 4); // Set hours to 9, minutes to 45, seconds and milliseconds to 0
-
-console.log(dat2.toTimeString()); // Output: '09:45'
-
-
-
- // TEMPORARY TESTING MUI
- let currentDay = new Date().toLocaleDateString();
- let currentDayAndTime = new Date().toLocaleString();
- let currentTime = new Date().toLocaleTimeString();
-
- console.log(currentDay, currentDayAndTime, currentTime)
-
-  //////TEST end//////////////////////////////////////
-
-
   // run on startup and whenever sleepRecords is changed
   useEffect(() => {
     // if sleepRecords is empty and the stopRecordsRenderLoop state/flag hasn't been tripped yet
@@ -119,8 +79,8 @@ console.log(dat2.toTimeString()); // Output: '09:45'
       setStopRecordsRenderLoop(true);
       // get the user's sleep records if they aren't set in state yet
       getSleepRecords();
-    } else if (sleepRecords.length !== 0 && !sleepRecord._id) {
-      // otherwise if the main sleep record hasn't been set in state yet and if sleepRecords isn't empty,
+    } else if (sleepRecords.length !== 0 && (!sleepRecord._id || !sleepRecords.includes(sleepRecord))) {
+      // otherwise if the main sleep record hasn't been set in state yet and if either sleepRecords isn't empty or sleepRecord was deleted,
       // find the first sleep record that is 'in progress' (has null for stop_sleep property) and assign the record to be the value of the state's main sleep record
       let found = false;
       for (let i = 0; i < sleepRecords.length; i++) {
@@ -138,12 +98,67 @@ console.log(dat2.toTimeString()); // Output: '09:45'
     }
   }, [sleepRecords]);
 
+  // run on startup and whenever sleepRecord is changed
+  useEffect(() => {
+    // if sleepRecord has been set to a proper sleep record
+    if (sleepRecord._id) {
+      // then set the field values in state to represent the current sleep record
+      let newFieldValues = {};
+      // loop through the field values in state
+      for (let key in fieldValues) {
+        if (key === 'pre_goal') {
+          // set pre_goal to default value
+          newFieldValues.pre_goal = 8;
+        } else if (key === 'pre_sleep_aid') {
+          // set pre_sleep_aid to default value
+          newFieldValues.pre_sleep_aid = 'none';
+        } else {
+          // give newFieldValues the value in sleepRecord associated with the current key
+          newFieldValues[key] = sleepRecord[key];
+        }
+      }
+      // replace the current field values in state with newFieldValues
+      setFieldValues(newFieldValues);
+      // trigger the master timer
+      setMasterTimer('starting');
+    }
+  }, [sleepRecord]);
+
   // run on startup and whenever masterTimer is changed
   useEffect(() => {
-    setTimeout(() => {
-      console.log('amongus');
-      setMasterTimer(masterTimer + 1);
-    }, 1000);
+    // if the sleep record is 'in progress'
+    if (sleepRecord.begin_sleep && sleepRecord.stop_sleep === null) {
+      // if masterTimer is set to 'starting', then instantly set master timer to the time between begin_sleep and now
+      if (masterTimer === 'starting') {
+        let timeInSeconds = dayjs().diff(sleepRecord.begin_sleep, 's');
+        const seconds = timeInSeconds % 60;
+        timeInSeconds -= seconds;
+        const minutes = Math.floor(timeInSeconds / 60) % 60;
+        timeInSeconds -= (minutes * 60);
+        const hours = Math.floor((timeInSeconds / 60) / 60);
+        setMasterTimer(`${hours}:${minutes}:${seconds}`);
+      } else {
+        // else, set master timer to the time between begin_sleep and now (in 1-second intervals)
+        setTimeout(() => {
+          let timeInSeconds = dayjs().diff(sleepRecord.begin_sleep, 's');
+          const seconds = timeInSeconds % 60;
+          timeInSeconds -= seconds;
+          const minutes = Math.floor(timeInSeconds / 60) % 60;
+          timeInSeconds -= (minutes * 60);
+          const hours = Math.floor((timeInSeconds / 60) / 60);
+          setMasterTimer(`${hours}:${minutes}:${seconds}`);
+        }, 1000);
+      }
+    } else if (sleepRecord.stop_sleep) {
+      // set the master timer to be the sleep record's total sleep time (between start and end of sleep)
+      let timeInSeconds = dayjs(sleepRecord.stop_sleep).diff(sleepRecord.begin_sleep, 's');
+      const seconds = timeInSeconds % 60;
+      timeInSeconds -= seconds;
+      const minutes = Math.floor(timeInSeconds / 60) % 60;
+      timeInSeconds -= (minutes * 60);
+      const hours = Math.floor((timeInSeconds / 60) / 60);
+      setMasterTimer(`${hours}:${minutes}:${seconds}`);
+    }
   }, [masterTimer]);
 
   // GET sleep records
@@ -190,20 +205,42 @@ console.log(dat2.toTimeString()); // Output: '09:45'
     // create an empty object and name it 'input'
     const input = {};
 
-    // if patchSleepRecord was the result of stopping the sleep timer, then patch only the stop_sleep property
+    // if patchSleepRecord was the result of stopping the sleep timer, then patch only the stop_sleep and hours_slept properties
     if (isResultOfStopTimer) {
       // assign current date to input as the value of stop_sleep
       input.stop_sleep = dayjs();
-    } else {
-      // otherwise, loop through the field values
-      for (let key in fieldValues) {
-        if (fieldValues[key] === '') {
+      // assign masterTimer's current value to input.hours_slept
+      input.hours_slept = masterTimer;
 
+    } else if (sleepRecord.stop_sleep !== null) {
+      // otherwise (if the current sleep record's end time is not null), loop through the field values
+      for (let key in fieldValues) {
+        // check if the field value is a 'pre' value
+        if (key === 'pre_goal' || key === 'pre_sleep_aid') {
+          // stop the current loop cycle
+          continue;
+        }
+
+        if (fieldValues[key] !== sleepRecord[key]) {
+          // only insert properties that are actually changing
+          input[key] = fieldValues[key];
         }
       }
+    } else {
+      // stop the function otherwise
+      console.error(`you can't modify a record whose timer hasn't ended`);
+      return;
     }
 
-    axios.patch(`/api/sleep/${user._id}/${sleepRecord._id}`, {})
+    // figure out how close the time slept was to the goal time, and then turn that result into a whole number (out of 7) that is then set to input.quality
+    // CURRENTLY USING LOW-ACCURACY BUT EASY-TO-UNDERSTAND LOGIC FOR RATING, MAY REPLACE IF TIME ALLOWS
+    let timeSlept = sleepRecord.hours_slept === '00:00:00' ? masterTimer.split(':') : sleepRecord.hours_slept.split(':');
+    let score = 7;
+    let comparison = Math.abs(sleepRecord.goal - Number(timeSlept[0]));
+    input.quality = score - comparison;
+
+    // use the input object to alter the current sleep record
+    axios.patch(`/api/sleep/${user._id}/${sleepRecord._id}`, input)
     .then(oldSleepRecordObj => {
       console.log('PATCH');
       console.log(oldSleepRecordObj);
@@ -251,8 +288,7 @@ console.log(dat2.toTimeString()); // Output: '09:45'
   }
 
   // updates the corresponding property in the fieldValues state when an input field is interacted with
-  const updateFieldInputs = (type, val) => {
-    console.log(fieldValues);
+  const updateFieldInput = (type, val) => {
     setFieldValues(currentFieldValues => {
       const copy = {...currentFieldValues};
       copy[type] = val;
@@ -263,15 +299,12 @@ console.log(dat2.toTimeString()); // Output: '09:45'
   return (
     <div>
       <Box sx={{ p: 2 }}>
-        <Box component={Paper} variant='outlined' sx={{ minWidth: 300, maxWidth: 700, textAlign: 'center', bgColor: 'secondary' }}>
-          PLACEHOLDAH
-        </Box>
         <Container maxWidth='lg'>
-          <Box sx={{ bgcolor: '#cfe8fc', height: '10vh' }} />
+          <Box sx={{ bgcolor: '#cfe8fc', height: '5vh' }} />
           <Card component={Card} variant='outlined' sx={{ minWidth: 300, maxWidth: 'lg', textAlign: 'center', bgcolor: 'primary' }}>
             {/* Display the "time slept" for the current sleepRecord */}
             <Typography variant='h1' textAlign='center' fontSize={90} color={sleepRecord.stop_sleep ? 'white' : 'gray'}>
-              {sleepRecord.hours_slept}
+              {masterTimer}
             </Typography>
             <Divider />
             <Box component={Paper} variant='outlined'>
@@ -284,14 +317,14 @@ console.log(dat2.toTimeString()); // Output: '09:45'
                   <Typography color='gray'>
                     {fieldValues.pre_goal}&nbsp;
                   </Typography>
-                  <Slider valueLabelDisplay="auto" value={fieldValues.pre_goal} step={1} marks min={0} max={24} onChange={e => {updateFieldInputs('pre_goal', e.target.value)}} />
+                  <Slider valueLabelDisplay="auto" value={fieldValues.pre_goal} step={1} marks min={0} max={24} onChange={e => {updateFieldInput('pre_goal', e.target.value)}} />
                 </Box>
                 <Box display="flex">
                   Sleep Aid:&nbsp;
                   <Typography color='gray'>
                     {fieldValues.pre_sleep_aid}&nbsp;
                   </Typography>
-                  <TextField label="Describe items used to help you sleep" variant="outlined" value={fieldValues.pre_sleep_aid} onChange={e => {updateFieldInputs('pre_sleep_aid', e.target.value)}} />
+                  <TextField label="Describe items used to help you sleep" variant="outlined" value={fieldValues.pre_sleep_aid} onChange={e => {updateFieldInput('pre_sleep_aid', e.target.value)}} />
                 </Box>
               </Stack>
             </Box>
@@ -319,50 +352,50 @@ console.log(dat2.toTimeString()); // Output: '09:45'
                   <Typography color='gray'>
                     {fieldValues.goal}&nbsp;
                   </Typography>
-                  <Slider valueLabelDisplay="auto" value={fieldValues.goal} step={1} marks min={0} max={24} onChange={e => {updateFieldInputs('goal', e.target.value)}} />
+                  <Slider valueLabelDisplay="auto" value={fieldValues.goal} step={1} marks min={0} max={24} onChange={e => {updateFieldInput('goal', e.target.value)}} />
                 </Box>
                 <Box display="flex">
-                  Time Slept (HH:MM:SS):&nbsp;
+                  Time Slept (H:M:S):&nbsp;
                   <Typography color='gray'>
                     {fieldValues.hours_slept}&nbsp;
                   </Typography>
-                  <TextField label="Insert time you slept (HH:MM:SS)" variant="outlined" value={fieldValues.hours_slept} onChange={e => {updateFieldInputs('hours_slept', e.target.value)}} />
+                  <TextField label="Insert time you slept (H:M:S)" variant="outlined" value={fieldValues.hours_slept} onChange={e => {updateFieldInput('hours_slept', e.target.value)}} />
                 </Box>
                 <Box display="flex">
                   Sleep Aid:&nbsp;
                   <Typography color='gray'>
                     {fieldValues.sleep_aid}&nbsp;
                   </Typography>
-                  <TextField label="Describe items used to help you sleep" variant="outlined" value={fieldValues.sleep_aid} onChange={e => {updateFieldInputs('sleep_aid', e.target.value)}} />
+                  <TextField label="Describe items used to help you sleep" variant="outlined" value={fieldValues.sleep_aid} onChange={e => {updateFieldInput('sleep_aid', e.target.value)}} />
                 </Box>
                 <Box display="flex">
                   Disturbance Count:&nbsp;
                   <Typography color='gray'>
                     {fieldValues.disturbances}&nbsp;
                   </Typography>
-                  <Slider valueLabelDisplay="auto" value={fieldValues.disturbances} step={1} marks min={0} max={10} onChange={e => {updateFieldInputs('disturbances', e.target.value)}} />
-                  {/* <TextField label="Insert number of disturbances" variant="outlined" value={fieldValues.disturbances} onChange={e => {updateFieldInputs('disturbances', e.target.value)}} /> */}
+                  <Slider valueLabelDisplay="auto" value={fieldValues.disturbances} step={1} marks min={0} max={10} onChange={e => {updateFieldInput('disturbances', e.target.value)}} />
+                  {/* <TextField label="Insert number of disturbances" variant="outlined" value={fieldValues.disturbances} onChange={e => {updateFieldInput('disturbances', e.target.value)}} /> */}
                 </Box>
                 <Box display="flex">
                   Time Sleep Began:&nbsp;
                   <Typography color='gray'>
-                    {fieldValues.begin_sleep}&nbsp;
+                    {fieldValues.begin_sleep ? dayjs(fieldValues.begin_sleep).format('YYYY-MM-DD hh:mm:ss A') : 'not set'}&nbsp;
                   </Typography>
-                  <TextField label="Insert time when sleep began" variant="outlined" value={fieldValues.begin_sleep} onChange={e => {updateFieldInputs('begin_sleep', e.target.value)}} />
+                  <TextField label="Insert time when sleep began" variant="outlined" value={fieldValues.begin_sleep === null ? 'null' : fieldValues.begin_sleep} onChange={e => {updateFieldInput('begin_sleep', e.target.value)}} />
                 </Box>
                 <Box display="flex">
                   Time Sleep Ended:&nbsp;
                   <Typography color='gray'>
-                    {fieldValues.stop_sleep}&nbsp;
+                    {fieldValues.stop_sleep ? dayjs(fieldValues.stop_sleep).format('YYYY-MM-DD hh:mm:ss A') : 'not set'}&nbsp;
                   </Typography>
-                  <TextField label="Insert time when sleep ended" variant="outlined" value={fieldValues.stop_sleep} onChange={e => {updateFieldInputs('stop_sleep', e.target.value)}} />
+                  <TextField label="Insert time when sleep ended" variant="outlined" value={fieldValues.stop_sleep === null ? 'null' : fieldValues.stop_sleep} onChange={e => {updateFieldInput('stop_sleep', e.target.value)}} />
                 </Box>
                 <Box display="flex">
                   Disturbance Notes:&nbsp;
                   <Typography color='gray'>
                     {fieldValues.disturbance_notes}&nbsp;
                   </Typography>
-                  <TextField label="Describe sleep disturbances" variant="outlined" value={fieldValues.disturbance_notes} onChange={e => {updateFieldInputs('disturbance_notes', e.target.value)}} />
+                  <TextField label="Describe sleep disturbances" variant="outlined" value={fieldValues.disturbance_notes} onChange={e => {updateFieldInput('disturbance_notes', e.target.value)}} />
                 </Box>
               </Stack>
             </Box>
@@ -370,7 +403,7 @@ console.log(dat2.toTimeString()); // Output: '09:45'
               <Stack direction='row' spacing={5}>
                 <Box display="flex">
                   <ChangeCircle fontSize='inherit' />
-                  <Chip label='Update Current' variant='outlined' onClick={e => {console.log('foobar')}} />
+                  <Chip label='Update Current' variant='outlined' onClick={() => {patchSleepRecord(false)}} color={sleepRecord.stop_sleep === null ? 'error' : 'primary'} />
                 </Box>
                 <Divider variant='middle' orientation='vertical' flexItem />
                 <Box display="flex">
@@ -384,13 +417,14 @@ console.log(dat2.toTimeString()); // Output: '09:45'
       </Box>
       <Divider variant='middle' />
       <Box sx={{ p: 2 }}>
+        <Box sx={{ bgcolor: '#cfe8fc', height: '2vh' }} />
         {/* Table to hold all of the user's sleep records */}
         <TableContainer component={Paper} variant='outlined'>
           <Table sx={{ minWidth: 700 }} aria-label='sleep records'>
             <TableHead>
               <TableRow>
                 <TableCell>Day</TableCell>
-                <TableCell align='right'>Time Slept (HH:MM:SS)</TableCell>
+                <TableCell align='right'>Time Slept (H:M:S)</TableCell>
                 <TableCell align='right'>Hours Goal</TableCell>
                 <TableCell align='right'>Disturbances</TableCell>
                 <TableCell align='right'>Disturbance Notes</TableCell>
@@ -415,14 +449,16 @@ console.log(dat2.toTimeString()); // Output: '09:45'
                   <TableCell align='right'>{sleepRecordObj.disturbances}</TableCell>
                   <TableCell align='right'>{sleepRecordObj.disturbance_notes}</TableCell>
                   <TableCell align='right'>{sleepRecordObj.sleep_aid}</TableCell>
-                  <TableCell align='right'>{dayjs(sleepRecordObj.begin_sleep).format('YYYY-MM-DD hh:mm:ss A')}</TableCell>
-                  <TableCell align='right'>{sleepRecordObj.stop_sleep ? dayjs(sleepRecordObj.stop_sleep).format('YYYY-MM-DD hh:mm:ss A') : 'not set' }</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.begin_sleep ? dayjs(sleepRecordObj.begin_sleep).format('YYYY-MM-DD hh:mm:ss A') : 'not set'}</TableCell>
+                  <TableCell align='right'>{sleepRecordObj.stop_sleep ? dayjs(sleepRecordObj.stop_sleep).format('YYYY-MM-DD hh:mm:ss A') : 'not set'}</TableCell>
                   <TableCell align='right'>
                     {resolveRating(sleepRecordObj.quality)}
                   </TableCell>
                   <TableCell align='right'>
                     <ButtonGroup variant='contained' aria-label='quick select and delete'>
-                      <Button onClick={() => {setSleepRecord(sleepRecordObj)}}>
+                      <Button onClick={() => {
+                        setSleepRecord(sleepRecordObj);
+                      }}>
                         {sleepRecordObj._id === sleepRecord._id ? <CheckCircle fontSize='inherit' /> : <CheckCircleOutline fontSize='inherit' /> }
                         Select
                       </Button>
@@ -437,18 +473,6 @@ console.log(dat2.toTimeString()); // Output: '09:45'
             </TableBody>
           </Table>
         </TableContainer>
-        <div>PAIN</div>
-        <Typography component='legend'>Sleep Rating</Typography>
-        <Rating
-          name='Sleep Rating'
-          defaultValue={3}
-          max={7}
-          icon={<Stars fontSize='inherit' />}
-          emptyIcon={<Circle fontSize='inherit' />}
-          readOnly
-        />
-        <div>emotional support V1 for programmers ;]</div>
-        <img src='https://i.etsystatic.com/48285043/r/il/38bfed/5614526251/il_600x600.5614526251_36m9.jpg' />
       </Box>
     </div>
   );

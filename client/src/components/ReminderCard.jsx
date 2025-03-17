@@ -17,6 +17,9 @@ const ReminderCard = ({user}) => {
     date: '',
   });
   
+
+  
+  
   const cancelEdit = () => {
     setEditRemindersId(null);
   };
@@ -194,9 +197,9 @@ const handleEditChange = (e) =>{
                 <Box mt={2} display="flex" justifyContent="center" gap={2}>
                   {!editRemindersId && (
                     <>
-                      <Button variant="contained" color="primary" onClick={() => handleComplete(reminder._id)}>Complete</Button>
-                      <Button variant="outlined" color="error" onClick={() => handleDelete(reminder._id)}>Delete</Button>
-                      <Button variant="outlined" color="primary" onClick={() => { setEditRemindersId(reminder._id); setEditReminderInfo({ ...reminder, date: reminder.date ? new Date(reminder.date).toISOString().slice(0, 16) : "" }); }}>Edit</Button>
+                      <Button variant="contained" color="primary" onClick={() => handleComplete(reminder._id)} sx={{ flex: 1 }}>Complete</Button>
+                      <Button variant="outlined" color="error" onClick={() => handleDelete(reminder._id)} sx={{ flex: 1 }}>Delete</Button>
+                      <Button variant="outlined" color="primary" onClick={() => { setEditRemindersId(reminder._id); setEditReminderInfo({ ...reminder, date: reminder.date ? new Date(reminder.date).toISOString().slice(0, 16) : "" }); }} sx={{ flex: 1 }}>Edit</Button>
                     </>
                   )}
                 </Box>
@@ -223,21 +226,59 @@ const handleEditChange = (e) =>{
       </Box>
 
       <Box
-        sx={{
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          padding: "16px",
-          backgroundColor: "white",
-          maxHeight: "350px", 
-        }}
-      >
-        <TextField label="Title" variant="outlined" fullWidth value={newReminders.title} onChange={handleInputChange} name="title" required sx={{ mt: 2 }} />
-        <TextField label="Description" variant="outlined" fullWidth value={newReminders.description} onChange={handleInputChange} name="description" multiline sx={{ mt: 2 }} />
-        <TextField label="Date" variant="outlined" fullWidth value={newReminders.date} onChange={handleInputChange} name="date" type="datetime-local" sx={{ mt: 2 }} />
-        <Button variant="contained" color="primary" onClick={postReminders} sx={{ mt: 2, width: "100%" }}>Create Reminder</Button>
-      </Box>
+  sx={{
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    padding: "16px",
+    backgroundColor: "white",
+    maxHeight: "350px", 
+    display: "flex", // Make the Box a flex container
+    flexDirection: "column", // Arrange children vertically
+    alignItems: "center", // Center align children horizontally
+  }}
+>
+  <TextField 
+    label="Title" 
+    variant="outlined" 
+    fullWidth 
+    value={newReminders.title} 
+    onChange={handleInputChange} 
+    name="title" 
+    required 
+    sx={{ mt: 2 }} 
+  />
+  <TextField 
+    label="Description" 
+    variant="outlined" 
+    fullWidth 
+    value={newReminders.description} 
+    onChange={handleInputChange} 
+    name="description" 
+    multiline 
+    sx={{ mt: 2 }} 
+  />
+  <TextField 
+    label="Date" 
+    variant="outlined" 
+    fullWidth 
+    value={newReminders.date} 
+    onChange={handleInputChange} 
+    name="date" 
+    type="datetime-local" 
+    sx={{ mt: 2 }} 
+  />
+  <Button 
+    variant="contained" 
+    color="primary" 
+    onClick={postReminders} 
+    sx={{ mt: 2, width: "45%" }}
+  >
+    Create Reminder
+  </Button>
+</Box>
     </Box>
   </Box>
+  
 );
 
 

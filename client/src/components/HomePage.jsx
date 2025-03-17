@@ -153,7 +153,7 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
         weight: 50, // default values; user can change later
       });
 
-      alert('Exercise added to routine!');
+      alert(`${exercise.name} added to routine!`);
     } catch (error) {
       console.error('Error adding exercise:', error);
       alert('Failed to add exercise.');

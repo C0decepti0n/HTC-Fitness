@@ -182,7 +182,7 @@ const resetPref = async () => {
               variant="contained"
               onClick={handleEdit}
               color="white"
-              sx={{ ml: 1, height: '40px', backgroundColor: '#0D1C61' }}
+              sx={{ ml: 1, height: '40px' }}
               >
                 {buttonText}
             </Button>

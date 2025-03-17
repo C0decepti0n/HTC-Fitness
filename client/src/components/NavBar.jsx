@@ -55,17 +55,18 @@ const NavBar = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
   const isRoutines = location.pathname === '/routines';
   const [open, setOpen] = useState(false);
-
-  const handleSearch = () => {
-    console.log('Searching for', searchInput);
-    setSearchInput('');
-  };
-
+  
   const handleEnter = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
   };
+  
+  const handleSearch = () => {
+    console.log('Searching for', searchInput);
+    setSearchInput('');
+  };
+
 
   const handleLogout = () => {
     axios.post('/logout')

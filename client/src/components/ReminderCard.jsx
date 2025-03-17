@@ -232,9 +232,9 @@ const handleEditChange = (e) =>{
     padding: "16px",
     backgroundColor: "white",
     maxHeight: "350px", 
-    display: "flex", // Make the Box a flex container
-    flexDirection: "column", // Arrange children vertically
-    alignItems: "center", // Center align children horizontally
+    display: "flex", 
+    flexDirection: "column", 
+    alignItems: "center", 
   }}
 >
   <TextField 

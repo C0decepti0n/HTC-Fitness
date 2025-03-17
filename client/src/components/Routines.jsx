@@ -16,7 +16,7 @@ import axios from 'axios';
 const Routines = ({ userId }) => {
   // state variables to store routine data, total weight lifted and loading status
   const [routineData, setRoutineData] = useState([]);
-  const [totalWeightLifted, setTotalWeightLifted] = useState(0);
+  const [totalWeightLifted, setTotalWeightLifted] = useState([]);
   const [loading, setLoading] = useState(true);
 
   //fetch saved exercises from the backend
@@ -53,9 +53,15 @@ const Routines = ({ userId }) => {
   // handle saving updated routine data to the backend
   const handleSubmit = async () => {
     try {
-      await axios.patch(`/api/routines/${userId}`, {
-        exercises: routineData,
-      });
+      await Promise.all(
+        routineData.map((exercise) =>
+          axios.patch(`/api/routines/${exercise._id}`, {
+            sets: exercise.sets,
+            reps: exercise.reps,
+            weight: exercise.weight,
+          })
+        )
+      );
       alert('Routine updated successfully!');
       fetchSavedExercises();
     } catch (error) {

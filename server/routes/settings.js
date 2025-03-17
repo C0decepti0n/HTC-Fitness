@@ -2,19 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const { User, Settings } = require('../db/index');
-// const { Settings } = require('../db/Settings')
-
 // GET the user's dashboard settings
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
-  console.log(`GET request for userId: ${userId}`); 
-  
-
   try {
-
     const settings = await Settings.find({ user_id: userId });
-    console.log('Settings found:', settings);  // Log the settings
-    // send back the user's sleep records
     res.status(200).json(settings);
   } catch (error) {
     console.error('Error fetching user dashboard preferences:', error);
@@ -25,23 +17,7 @@ router.get('/:userId', async (req, res) => {
 router.post('/:userId', async (req, res) => {
   const { userId } = req.params;
   const settings = req.body;
-  console.log(`POST request for userId: ${userId} with settings:`, settings); 
   try {
-    // reject request if the given user id is invalid
-    // const user = await User.findById(userId);
-    // if (!user) {
-    //   return res.status(404).json({ message: 'User not found' });
-    // }
-
-    // add the user id onto the sleepRecord object before it is used to make a new sleep record
-    const user = await User.findById(userId);
-    if (!user) {
-      console.log('User not found');
-      return res.status(404).json({ message: 'User not found' });
-    }
-    settings.user_id = userId;
-
-    // create new sleep record
     const newUserSettings = await Settings.create(settings);
     
     console.log('New user settings saved:', newUserSettings);  //
@@ -52,4 +28,34 @@ router.post('/:userId', async (req, res) => {
   }
 });
 
+router.patch('/:userId', async (req, res) => {
+  const {userId} = req.params;
+  
+  try {
+    const setting = await Settings.findOneAndUpdate({user_id: userId}, req.body, { new: true });
+
+    if (!setting) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log('Settings updated at server')
+    res.json({message: 'settings updated', setting});
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Error updating settings', error });
+  }
+});
+
+router.delete('/:userId', async (req, res) => {
+  const {userId} = req.params; 
+  
+  try {
+    const settings = await Settings.deleteOne({user_id: userId});
+    console.log('reset server success');
+    res.json({message: 'user settings reset at server'})
+
+  } catch (error) {
+    console.error('reset server', error);
+    res.status(500).json({ message: 'Server could not process reset request', error });
+  }
+});
 module.exports = router;

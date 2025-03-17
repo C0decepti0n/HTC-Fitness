@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Select, MenuItem, Dialog } from '@mui/material';
+import { Box, Typography, Button, Dialog } from '@mui/material';
 import axios from 'axios';
 
-const TipsPopup = ({ userId }) => {
-    const [tips, setTips] = useState([]);
-    const [open, setOpen] = useState(true);
-    const [intensity, setIntensity] = useState(3); // Default intensity
+const TipsPopup = ({ userId, tipsEnabled, setTipsEnabled }) => {
+    const [tip, setTip] = useState("");
+    const [intensity, setIntensity] = useState(1);
+    const [gender, setGender] = useState("male");
+    const [open, setOpen] = useState(false);
 
-   
     useEffect(() => {
-        if (userId) {
+        if (userId && tipsEnabled) {
             fetchTips();
+            setOpen(true);
+        } else {
+            setOpen(false);
         }
-    }, [userId]);
+    }, [userId, tipsEnabled]);
 
-    
     const fetchTips = async () => {
         try {
             console.log("Fetching tips for userId:", userId);
-
             if (!userId || userId.length !== 24) {
                 console.error("Invalid userId passed:", userId);
                 return;
@@ -27,58 +28,84 @@ const TipsPopup = ({ userId }) => {
             const response = await axios.get(`/api/tips/${userId}`);
             console.log("API Response:", response.data);
 
-            setTips(response.data.tips || []);
+            if (response.data) {
+                setTip(response.data.tip || "No tips available for this level.");
+                setIntensity(response.data.intensity || 1);
+                setGender(response.data.gender || "male");
+                setTipsEnabled(true);
+            }
         } catch (error) {
             console.error('Error fetching tips:', error);
         }
     };
 
-    const handleIntensityChange = async (event) => {
-        const newIntensity = event.target.value;
-        setIntensity(newIntensity);
-        try {
-            await axios.patch(`/api/tips/${userId}/intensity`, { intensity: newIntensity });
-            fetchTips();
-        } catch (error) {
-            console.error('Error updating intensity:', error);
+    const updateIntensity = async () => {
+        if (intensity < 7) {
+            try {
+                const newIntensity = intensity + 1;
+                await axios.patch(`/api/tips/${userId}`, { intensity: newIntensity });
+
+                setIntensity(newIntensity);
+                fetchTips();
+            } catch (error) {
+                console.error('Error updating intensity:', error);
+            }
         }
     };
 
-    const handleDeleteFeature = async () => {
+    const deleteTips = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete your workout tips?");
+        if (!confirmDelete) return;
+
         try {
+            console.log("Deleting tips for userId:", userId);
             await axios.delete(`/api/tips/${userId}`);
-            setTips([]);
+
+            setTipsEnabled(false);
             setOpen(false);
+            console.log("Tips deleted successfully.");
         } catch (error) {
-            console.error('Error deleting tips feature:', error);
+            console.error("Error deleting tips:", error);
         }
     };
+
+    if (!tipsEnabled) return null;
 
     return (
         <Dialog open={open} onClose={() => setOpen(false)}>
-            <Box p={3} textAlign='center'>
-                <Typography variant='h6'>Daily Workout Tips</Typography>
-                {tips.length > 0 ? (
-                    tips.map((tip, index) => (
-                        <Typography key={index} variant='body1'>{tip}</Typography>
-                    ))
-                ) : (
-                    <Typography>No tips available</Typography>
-                )}
+            <Box p={3} textAlign="center">
+                <Typography variant="h6">Daily Workout Tip</Typography>
+
+                <Typography variant="body1" mt={2}>
+                    {tip || "Loading tips..."}
+                </Typography>
+
+                <Typography variant="body2">Current Intensity: {intensity}</Typography>
 
                 <Box mt={2}>
-                    <Typography variant='body2'>Adjust Workout Intensity:</Typography>
-                    <Select value={intensity} onChange={handleIntensityChange}>
-                        {[1, 2, 3, 4, 5, 6, 7].map(level => (
-                            <MenuItem key={level} value={level}>{level}</MenuItem>
-                        ))}
-                    </Select>
-                </Box>
+                    <Button 
+                        variant="contained" 
+                        color="primary" 
+                        onClick={updateIntensity} 
+                        disabled={intensity >= 7}
+                    >
+                        Increase Intensity
+                    </Button>
 
-                <Box mt={2}>
-                    <Button variant='contained' onClick={() => setOpen(false)}>Close</Button>
-                    <Button variant='outlined' color='error' onClick={handleDeleteFeature} sx={{ ml: 2 }}>
-                        Disable Tips Feature
+                    <Button 
+                        variant="contained" 
+                        color="error" 
+                        onClick={deleteTips}
+                    >
+                        Delete Tips
+                    </Button>
+
+                    <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={() => setOpen(false)}
+                    >
+                        Close
                     </Button>
                 </Box>
             </Box>

@@ -15,16 +15,13 @@ const tipsRouter = require('./routes/tips');
 
 const settingsRouter = require('./routes/settings');
 
+//update routes
+const routinesRouter = require('./routes/Routine');
 const { User } = require('./db');
-
-// const { Reminder } = require('./db');
-
-
 
 
 //update routes
-const routinesRouter = require('./routes/Routine.js');
-
+// const routinesRouter = require('./routes/Routine.js');
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -42,7 +39,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/HTC-Fitness')
     .catch((err) => {
         console.error('Error connecting to MongoDB:', err.message);
     });
-
+    
 app.use(express.json());
 app.use(express.static(DIST_DIR));
 
@@ -52,6 +49,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 }));
+
 
 // Initialize Passport for google
 app.use(passport.initialize());
@@ -172,6 +170,11 @@ app.get('/', isAuthenticated, (req, res) => {
     res.sendFile(path.resolve(DIST_DIR, 'index.html'));
 });
 
+// Semi fix to known page refresh but
+app.get('*', (req, res) => {
+    res.sendFile(path.join(DIST_DIR, 'index.html'));
+  });
+  
 app.listen(PORT, '0.0.0.0', () => {
     console.info(`Server listening at http://127.0.0.1:${PORT}`);
 });

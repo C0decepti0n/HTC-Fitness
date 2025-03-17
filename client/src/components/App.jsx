@@ -18,18 +18,15 @@ import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
 import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
-
-import Tips from './TipsPopup.jsx';
-import Reminders from './ReminderCard.jsx'
-import Settings from './Settings.jsx'
-import Profile from './Profile.jsx'
-
+import TipsPopup from './TipsPopup.jsx';
+import Reminders from './ReminderCard.jsx';
+import Settings from './Settings.jsx';
+import Profile from './Profile.jsx';
 
 const lightTheme = createTheme({
   palette: {
     mode: 'light',
     background: {
-
       default: 'white',
     },
   },
@@ -45,37 +42,51 @@ const darkTheme = createTheme({
 });
 
 const App = () => {
-  // detect user color preference
+  // Detect user color preference
   const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const theme = prefersDarkMode ? darkTheme : lightTheme;
 
   const [exercises, setExercises] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
-  
+  // track tips feature
+  const [tipsEnabled, setTipsEnabled] = useState(true); 
 
   useEffect(() => {
-    // Check if user is authenticated
     const checkAuth = async () => {
       try {
         const response = await axios.get('/api/check-auth');
         setIsAuthenticated(response.data.isAuthenticated);
 
-        // Fetch user profile if authenticated
         if (response.data.isAuthenticated) {
           const profileResponse = await axios.get('/me');
           setUserProfile(profileResponse.data);
+
+          // fetch tipsEnabled state from the backend
+          fetchTipsStatus(profileResponse.data._id);
         } else {
           setUserProfile(null);
         }
       } catch (error) {
         setIsAuthenticated(false);
-        throw new Error('Error checking auth', error);
+        console.error('Error checking auth', error);
       }
     };
 
     checkAuth();
   }, []);
+
+  const fetchTipsStatus = async (userId) => {
+    if (!userId) return;
+
+    try {
+      const response = await axios.get(`/api/tips/${userId}`);
+      // default to true
+      setTipsEnabled(response.data.tipsEnabled ?? true); 
+    } catch (error) {
+      console.error('Error fetching tips status:', error);
+    }
+  };
 
   const fetchRandomExercises = async (endpoint = '/api/exercises') => {
     try {
@@ -102,19 +113,28 @@ const App = () => {
         <CssBaseline />
         <Router>
           {isAuthenticated && <NavBar setIsAuthenticated={setIsAuthenticated} />}
+
+          {/* Show TipsPopup only if enabled */}
+          {isAuthenticated && userProfile && tipsEnabled && (
+            <TipsPopup 
+              userId={userProfile._id} 
+              tipsEnabled={tipsEnabled} 
+              setTipsEnabled={setTipsEnabled} 
+            />
+          )}
+
           <Routes>
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
             <Route path="/" element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                
+              <ProtectedRoute>
                 <HomePage
                   user={userProfile}
                   exercises={exercises}
                   fetchRandomExercises={fetchRandomExercises}
                 />
-                
               </ProtectedRoute>
             } />
+
             <Route path="/routines" element={
               <ProtectedRoute>
                 <Routines savedExercises={userProfile?.saved_exercises || []} userId={userProfile?._id} />
@@ -122,35 +142,34 @@ const App = () => {
             } />
             <Route path="/goals" element={
               <ProtectedRoute>
-                <Goals user={userProfile}/>
+                <Goals user={userProfile} />
               </ProtectedRoute>
             } />
             <Route path="/sleep" element={
               <ProtectedRoute>
-                <Sleep user={userProfile}/>
-              </ProtectedRoute>
-            } />
-            <Route path="/tips" element={
-              <ProtectedRoute>
-                <Tips user={userProfile}/>
+                <Sleep user={userProfile} />
               </ProtectedRoute>
             } />
             <Route path="/reminders" element={
               <ProtectedRoute>
-                <Reminders user={userProfile}/>
+                <Reminders user={userProfile} />
               </ProtectedRoute>
             } />
             <Route path="/settings" element={
               <ProtectedRoute>
-                <Settings user={userProfile}/>
+                <Settings user={userProfile} />
               </ProtectedRoute>
             } />
             <Route path="/profile" element={
               <ProtectedRoute>
-                <Profile user={userProfile}/>
+                <Profile 
+                  user={userProfile} 
+                  tipsEnabled={tipsEnabled} 
+                  setTipsEnabled={setTipsEnabled} 
+                />
               </ProtectedRoute>
             } />
-          </Routes>
+          </Routes> 
         </Router>
       </ThemeProvider>
     </LocalizationProvider>

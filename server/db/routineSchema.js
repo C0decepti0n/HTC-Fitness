@@ -11,4 +11,7 @@ const RoutineSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Routine', RoutineSchema);
+//ensure collection name is explicitly set
+const Routine = mongoose.model('Routine', RoutineSchema, 'routines');
+
+module.exports = { Routine };

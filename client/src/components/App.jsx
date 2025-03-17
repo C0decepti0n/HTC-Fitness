@@ -18,12 +18,10 @@ import Goals from './Goals.jsx';
 import Routines from './Routines.jsx';
 import Sleep from './Sleep.jsx';
 import Login from './Login.jsx';
-import Tips from './TipsPopup.jsx'; 
 import TipsPopup from './TipsPopup.jsx';
 import Reminders from './ReminderCard.jsx';
 import Settings from './Settings.jsx';
 import Profile from './Profile.jsx';
-
 
 const lightTheme = createTheme({
   palette: {
@@ -51,10 +49,10 @@ const App = () => {
   const [exercises, setExercises] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
-  const [showPopup, setShowPopup] = useState(false); // controls popup visibility
+  // track tips feature
+  const [tipsEnabled, setTipsEnabled] = useState(true); 
 
   useEffect(() => {
-    // Check if user is authenticated
     const checkAuth = async () => {
       try {
         const response = await axios.get('/api/check-auth');
@@ -64,8 +62,8 @@ const App = () => {
           const profileResponse = await axios.get('/me');
           setUserProfile(profileResponse.data);
 
-          //  show popup immediately after login
-          setShowPopup(true);
+          // fetch tipsEnabled state from the backend
+          fetchTipsStatus(profileResponse.data._id);
         } else {
           setUserProfile(null);
         }
@@ -77,6 +75,18 @@ const App = () => {
 
     checkAuth();
   }, []);
+
+  const fetchTipsStatus = async (userId) => {
+    if (!userId) return;
+
+    try {
+      const response = await axios.get(`/api/tips/${userId}`);
+      // default to true
+      setTipsEnabled(response.data.tipsEnabled ?? true); 
+    } catch (error) {
+      console.error('Error fetching tips status:', error);
+    }
+  };
 
   const fetchRandomExercises = async (endpoint = '/api/exercises') => {
     try {
@@ -104,10 +114,14 @@ const App = () => {
         <Router>
           {isAuthenticated && <NavBar setIsAuthenticated={setIsAuthenticated} />}
 
-          {/*  Show TipsPopup Immediately */}
-          {isAuthenticated && userProfile && (
-    <TipsPopup userId={userProfile._id} />
-)}
+          {/* Show TipsPopup only if enabled */}
+          {isAuthenticated && userProfile && tipsEnabled && (
+            <TipsPopup 
+              userId={userProfile._id} 
+              tipsEnabled={tipsEnabled} 
+              setTipsEnabled={setTipsEnabled} 
+            />
+          )}
 
           <Routes>
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
@@ -121,7 +135,6 @@ const App = () => {
               </ProtectedRoute>
             } />
 
-            
             <Route path="/routines" element={
               <ProtectedRoute>
                 <Routines savedExercises={userProfile?.saved_exercises || []} userId={userProfile?._id} />
@@ -149,13 +162,13 @@ const App = () => {
             } />
             <Route path="/profile" element={
               <ProtectedRoute>
-                <Profile user={userProfile} />
+                <Profile 
+                  user={userProfile} 
+                  tipsEnabled={tipsEnabled} 
+                  setTipsEnabled={setTipsEnabled} 
+                />
               </ProtectedRoute>
             } />
-         
-         
-         
-         
           </Routes> 
         </Router>
       </ThemeProvider>

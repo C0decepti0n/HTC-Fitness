@@ -6,7 +6,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 
 
-// const { ObjectId } = require("mongodb");
+
 
 router.get('/:userId', async (req, res) => {
     try {
@@ -14,12 +14,39 @@ router.get('/:userId', async (req, res) => {
         
         // first find user details
         const user = await Tips.findOne({ userId: userId });
-
+        router.get('/api/tips/:userId', async (req, res) => {
+            try {
+                const { userId } = req.params;
+                const userTips = await db.collection('tips').findOne({ userId: ObjectId(userId) });
+        
+                if (!userTips) {
+                    // and if no tips exist for the user then create default tips
+                    const defaultTips = {
+                        userId: ObjectId(userId),
+                        // default gender
+                        gender: "male",
+                        // default intensity 
+                        intensity: 1, 
+                        // default to enabled
+                        tipsEnabled: true, 
+                    };
+        
+                    await db.collection('tips').insertOne(defaultTips);
+                    // return the default tips
+                    return res.json(defaultTips); 
+                }
+        
+                res.json(userTips);
+            } catch (error) {
+                console.error("Error fetching tips:", error);
+                res.status(500).json({ error: "Internal Server Error" });
+            }
+        });
         if (!user) {
             return res.status(404).json({ message: "User tips not found" });
         }
 
-        // now fetch tips based on gender and intensity
+        // now get tips based on gender and intensity
         const tipsData = await Tips.findOne({
             gender: user.gender, 
             intensity: user.intensity 
@@ -55,7 +82,8 @@ router.post("/", async (req, res) => {
             {
                 $set: { gender, intensity, tips, disabled: false }
             },
-            { upsert: true } // insert if it doesntt exist
+            // insert if it doesntt exist
+            { upsert: true } 
         );
 
         res.status(200).json({ message: "Tips updated successfully", data: updatedTips });
@@ -85,7 +113,7 @@ router.patch('/:userId', async (req, res) => {
             return res.status(404).json({ message: "User tips not found" });
         }
 
-        // fetch new tips based on updated gender & intensity
+        // get new tips based on updated gender & intensity
         const newTips = await Tips.findOne({ gender, intensity });
 
         res.json({ message: "Updated successfully", newTips });
@@ -96,28 +124,23 @@ router.patch('/:userId', async (req, res) => {
 });
 
 // DELETE tips for a user
-router.delete('/:userId/:tipId', async (req, res) => {
-    const { userId, tipId } = req.params;
-
+router.delete('/:userId', async (req, res) => {
     try {
-        // validate that the user exists
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        // extract the userId from URL
+        const { userId } = req.params; 
+        console.log("Deleting tips for userId:", userId);
 
-        // delete the tip entry
-        const deletedTip = await Tips.findByIdAndDelete(tipId);
+        const deletedTip = await Tips.findOneAndDelete({ userId });
 
         if (!deletedTip) {
-            return res.status(404).json({ message: 'No tips found to delete' });
+            return res.status(404).json({ message: 'Tips not found for this user' });
         }
 
-        res.status(200).json({ message: 'Tips deleted successfully!', deletedTip });
+        res.json({ message: 'Tips deleted successfully' });
     } catch (error) {
         console.error('Error deleting tips:', error);
-        res.status(500).json({ message: 'Error deleting tips' });
+        res.status(500).json({ message: 'Server error' });
     }
 });
-// comments 
+
 module.exports = router;

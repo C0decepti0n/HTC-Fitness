@@ -9,7 +9,7 @@ import {
   CardContent,
   Dialog,
   Stack,
-  TexttField,
+  TextField,
   SnackBar,
   Grid2,
   Typography,
@@ -141,6 +141,24 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
       setOpenSnackbar(true);
     }
   };
+  //add exercise to user routine
+  const handleAddToRoutine = async (exercise) => {
+    try {
+      await axios.post('/api/routines', {
+        userId: user._id,
+        exercise: exercise.name,
+        muscle: exercise.muscle,
+        sets: 3,
+        reps: 10,
+        weight: 50, // default values; user can change later
+      });
+
+      alert('Exercise added to routine!');
+    } catch (error) {
+      console.error('Error adding exercise:', error);
+      alert('Failed to add exercise.');
+    }
+  }
 
 
   return (
@@ -199,7 +217,7 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
             <Grid2 container spacing={2} justifyContent="center" alignItems="stretch">
               {exercises.map((exercise, index) => (
                 <Grid2 xs={12} sm={6} md={4} key={index}>
-                  <ExerciseCard exercise={ exercise } user={ user }/>
+                  <ExerciseCard exercise={ exercise } user={ user } onAddToRoutine={handleAddToRoutine}/>
                 </Grid2>
               ))}
             </Grid2>

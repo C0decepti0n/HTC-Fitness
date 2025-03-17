@@ -12,7 +12,7 @@ router.get('/:userId', async (req, res) => {
   try {
     // Ensure the user exists
     // Fetch users routines
-    const routines = await Routine.find({ userId });
+    const routines = await Routine.find({ userId: req.params.userId });
 
     console.log(`Routines found: ${routines.length}`);
     res.status(200).json(routines);
@@ -49,11 +49,10 @@ router.post('/', async (req, res) => {
 
 // PATCH (update) an existing routine
 router.patch('/:id', async (req, res) => {
-  const { id } = req.params;
-  const updates = req.body;
+
 
   try {
-    const updatedRoutine = await Routine.findByIdAndUpdate(id, updates, { new: true });
+    const updatedRoutine = await Routine.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.status(200).json(updatedRoutine);
   } catch (error) {
     console.error('Error updating routine:', error);
@@ -63,10 +62,10 @@ router.patch('/:id', async (req, res) => {
 
 // DELETE a routine
 router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
+  // const { id } = req.params;
 
   try {
-    const deletedRoutine = await Routine.findByIdAndDelete(id);
+    const deletedRoutine = await Routine.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: 'Routine deleted successfully', deletedRoutine });
   } catch (error) {
     console.error('Error deleting routine:', error);

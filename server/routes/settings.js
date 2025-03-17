@@ -2,17 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const { User, Settings } = require('../db/index');
-// const { Settings } = require('../db/Settings')
-
 // GET the user's dashboard settings
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
-  // console.log(userId, 'hi');
-  // console.log(`GET request for userId: ${userId}`); 
   try {
     const settings = await Settings.find({ user_id: userId });
-    // console.log('Settings found:', settings);  // Log the settings
-    // send back the user's sleep records
     res.status(200).json(settings);
   } catch (error) {
     console.error('Error fetching user dashboard preferences:', error);
@@ -24,13 +18,6 @@ router.post('/:userId', async (req, res) => {
   const { userId } = req.params;
   const settings = req.body;
   try {
-    // reject request if the given user already has settings
-    // const user = await Settings.find({ user_id: userId });
-    // if (user) {
-    //   console.log('Cannot add new to existing user')
-    //   return res.status(405).json({ message: 'User settings exist, patch required' });
-    // }
-    
     const newUserSettings = await Settings.create(settings);
     
     console.log('New user settings saved:', newUserSettings);  //

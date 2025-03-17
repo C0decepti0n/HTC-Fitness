@@ -26,13 +26,12 @@ import Goals from './Goals.jsx';
 
 const HomePage = ({ user, exercises, fetchRandomExercises }) => {
   // Preferred Name
+  const navigate = useNavigate();
   const [prefName, setPrefName] = useState('');
-  // const userName = prefName || user.nameFirst;
-    // State to store user-input weights
   const [date, setDate] = useState(dayjs());
   const [dateWeight, setDateWeight] = useState('');
+  const [dashboard, setDashboard] = useState([]);
   const [weights, setWeights] = useState({
-    // goalWeight: user.goal_weight || 0,
     allWeights: user.weights || [],
     currentWeight:
       user.weights.length > 0
@@ -40,68 +39,61 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
         : 0,
   });
 
-  const navigate = useNavigate();
-
-  //* usersettings
-  const [dashboard, setDashboard] = useState([]);
-
- // Call fetch request on page load
- useEffect(() => {
-  getSettings();
-  if (user) {
-    // Sort the weights array by date in ascending order
-    const sortedWeights = (user.weights || [])
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    setWeights({
-      // goalWeight: user.goal_weight || 0,
-      allWeights: sortedWeights || [],
-      currentWeight:
-        sortedWeights.length > 0
-          ? sortedWeights[sortedWeights.length - 1].weight
-          : 0,
-    });
-  };
-}, [])
-
-//* GET Settings 
-const getSettings = async () => {
-  try {
-  const response = await axios.get(`/api/settings/${user._id}`);
-  
-    if (response.data && response.data.length > 0) {
-      setPrefName(response.data[0].prefName);
-      setDashboard(response.data[0].dashboard);
-      
-    } else {
-      createDefaultSettings()
-    }
-  } catch(err) {
-    console.log('Failed to find user data', err)
-  }
-};
-
-
-
-const createDefaultSettings = async () => {
-  try {
-    const response = await axios.post(`/api/settings/${user._id}`, {
-      prefName: user.nameFirst,
-      dashboard: ['exerciseSuggestions'],
-      user_id: user._id,
-    });
-    console.log('Default settings created', response.data);
-    getSettings();
-
-  } catch (error) {
-    console.log('failed on client to crate new user settings', error)
-  }
-};
-
-
+  // Tool Tip   
   const handleSettings = () => {
     navigate('/settings', { state: { from: 'home' } });
   };
+  // Call fetch request on page load
+  useEffect(() => {
+    getSettings();
+    // Weight info for Weight Card
+    if (user) {
+      // Sort the weights array by date in ascending order
+      const sortedWeights = (user.weights || [])
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+      setWeights({
+        // goalWeight: user.goal_weight || 0,
+        allWeights: sortedWeights || [],
+        currentWeight:
+          sortedWeights.length > 0
+            ? sortedWeights[sortedWeights.length - 1].weight
+            : 0,
+      });
+    };
+  }, [])
+
+  //* GET Settings 
+  const getSettings = async () => {
+    try {
+    const response = await axios.get(`/api/settings/${user._id}`); 
+      if (response.data && response.data.length > 0) {
+        setPrefName(response.data[0].prefName);
+        setDashboard(response.data[0].dashboard);
+      } else {
+        createDefaultSettings()
+      }
+    } catch(err) {
+      console.log('Failed to find user data', err)
+    }
+  };
+
+
+  //* POST create default
+  const createDefaultSettings = async () => {
+    try {
+      const response = await axios.post(`/api/settings/${user._id}`, {
+        prefName: user.nameFirst,
+        dashboard: ['exerciseSuggestions'],
+        user_id: user._id,
+      });
+      console.log('Default settings created', response.data);
+      getSettings();
+    } catch (error) {
+      console.log('failed on client to crate new user settings', error)
+    }
+  };
+
+  //* Weight Card Props
   // Snackbar state
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -176,7 +168,6 @@ const createDefaultSettings = async () => {
      {/* Dashboard Elements */}
     <Grid2 aria-label="dashboard">
       {/*Conditional rendering */}
-    
         {dashboard.includes('exerciseSuggestions') && (
           <Box display="flex" justifyContent="center" gap={2} margin="20px 0">
           <Button
@@ -214,7 +205,7 @@ const createDefaultSettings = async () => {
             </Grid2>
         ) : (
           <Typography variant="h6">
-          Get Some Exercises!
+          {/* Get Some Exercises! */}
         </Typography>
         )}
     {dashboard.includes('weightCard') && (

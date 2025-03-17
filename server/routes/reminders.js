@@ -1,14 +1,12 @@
 const express = require('express');
 const { User, Reminder } = require('../db/index');
 
-//const { Reminder } = require('../db/index');
 
 const router = express.Router();
 
 // GET: fetch all reminders for a user
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
-  //console.log('Received userId:', userId); // Debug log
 
   try {
     const reminders = await Reminder.find({ user_id: userId }); //make  sure user_id exists in DB

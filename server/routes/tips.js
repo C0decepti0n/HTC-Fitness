@@ -3,80 +3,95 @@ const express = require('express');
 const { User, Tips } = require('../db/index'); 
 // change Tip to Tips line 22 example
 const router = express.Router();
+const mongoose = require("mongoose");
 
+
+// const { ObjectId } = require("mongodb");
 
 router.get('/:userId', async (req, res) => {
-    const { userId } = req.params;
-
     try {
-        // check if the user exists
-        const user = await User.findById(userId);
+        const { userId } = req.params;
+        
+        // first find user details
+        const user = await Tips.findOne({ userId: userId });
+
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: "User tips not found" });
         }
 
-        // users gender and intensity
-        const { gender, intensity = 3 } = user; 
+        // now fetch tips based on gender and intensity
+        const tipsData = await Tips.findOne({
+            gender: user.gender, 
+            intensity: user.intensity 
+        });
 
-        // retrieve tips based on gender and intensity
-        const tipEntry = await Tips.findOne({ gender, intensity });
-
-        if (!tipEntry) {
-            return res.status(404).json({ message: 'No tips found for this user' });
+        if (!tipsData) {
+            return res.status(404).json({ message: "No tips available for this level" });
         }
 
-        res.status(200).json({ tips: tipEntry.tips });
+        // pick a random tip
+        const randomTip = tipsData.tips[Math.floor(Math.random() * tipsData.tips.length)];
+
+        res.json({ tip: randomTip, intensity: user.intensity });
     } catch (error) {
         console.error('Error fetching tips:', error);
-        res.status(500).json({ message: 'Error fetching tips' });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
 // POST new tips for a user
-router.post('/', async (req, res) => {
-    const { userId, gender, intensity, tips } = req.body;
-
+router.post("/", async (req, res) => {
     try {
-        // validate that user existence
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        const { userId, gender, intensity, tips } = req.body;
+
+        // make sure userId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID format" });
         }
 
-        // create new tip entry
-        const newTip = new Tips({ userId, gender, intensity, tips });
-        await newTip.save();
+        // use updateOne to update if exists or insert if not
+        const updatedTips = await Tips.updateOne(
+            { userId: userId },
+            {
+                $set: { gender, intensity, tips, disabled: false }
+            },
+            { upsert: true } // insert if it doesntt exist
+        );
 
-        res.status(201).json({ message: 'Tips added successfully!', newTip });
+        res.status(200).json({ message: "Tips updated successfully", data: updatedTips });
     } catch (error) {
-        console.error('Error adding tips:', error);
-        res.status(500).json({ message: 'Error adding tips' });
+        console.error("Error updating tips:", error);
+        res.status(500).json({ message: "Server error" });
     }
 });
 
-// PATCH a user's tips
+// update gender or intensity
 router.patch('/:userId', async (req, res) => {
     const { userId } = req.params;
-    const { gender, intensity, tips } = req.body;
+    const { gender, intensity } = req.body;
 
     try {
-        // validate that user existence
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        if (!gender && intensity === undefined) {
+            return res.status(400).json({ message: "No valid fields to update" });
         }
 
-        // find and update tip entry
-        const updatedTip = await Tip.findOneAndUpdate(
-            { userId, gender, intensity },
-            { tips },
-            { new: true, upsert: true }
+        let updatedTips = await Tips.findOneAndUpdate(
+            { userId },
+            { $set: { gender, intensity } },
+            { new: true }
         );
 
-        res.status(200).json({ message: 'Tips updated successfully!', updatedTip });
+        if (!updatedTips) {
+            return res.status(404).json({ message: "User tips not found" });
+        }
+
+        // fetch new tips based on updated gender & intensity
+        const newTips = await Tips.findOne({ gender, intensity });
+
+        res.json({ message: "Updated successfully", newTips });
     } catch (error) {
-        console.error('Error updating tips:', error);
-        res.status(500).json({ message: 'Error updating tips' });
+        console.error("Error updating gender/intensity:", error);
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -85,14 +100,14 @@ router.delete('/:userId/:tipId', async (req, res) => {
     const { userId, tipId } = req.params;
 
     try {
-        // validate that user existence
+        // validate that the user exists
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
         // delete the tip entry
-        const deletedTip = await Tip.findByIdAndDelete(tipId);
+        const deletedTip = await Tips.findByIdAndDelete(tipId);
 
         if (!deletedTip) {
             return res.status(404).json({ message: 'No tips found to delete' });
@@ -104,5 +119,5 @@ router.delete('/:userId/:tipId', async (req, res) => {
         res.status(500).json({ message: 'Error deleting tips' });
     }
 });
-
+// comments 
 module.exports = router;

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const sleepSchema = require('./sleep');
 const RoutineSchema = require('./routineSchema');
 
-const TipsSchema = require('./Tips')
+const TipsSchema = require('./Tips');
 
 const settingsSchema = require('./Settings');
 

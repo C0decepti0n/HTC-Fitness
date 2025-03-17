@@ -20,11 +20,8 @@ const routinesRouter = require('./routes/Routine');
 const { User } = require('./db');
 
 
-
-
-
-
-
+//update routes
+// const routinesRouter = require('./routes/Routine.js');
 
 dotenv.config({
   path: path.resolve(__dirname, '../.env'),
@@ -174,6 +171,11 @@ app.get('/', isAuthenticated, (req, res) => {
     res.sendFile(path.resolve(DIST_DIR, 'index.html'));
 });
 
+// Semi fix to known page refresh but
+app.get('*', (req, res) => {
+    res.sendFile(path.join(DIST_DIR, 'index.html'));
+  });
+  
 app.listen(PORT, '0.0.0.0', () => {
     console.info(`Server listening at http://127.0.0.1:${PORT}`);
 });

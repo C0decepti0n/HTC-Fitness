@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Select, MenuItem, Dialog } from '@mui/material';
+import { Box, Typography, Button, Dialog } from '@mui/material';
 import axios from 'axios';
 
 const TipsPopup = ({ userId }) => {
-    const [tips, setTips] = useState([]);
+    const [tip, setTip] = useState("");
+    const [intensity, setIntensity] = useState(1);
+    const [gender, setGender] = useState("male"); // default gender
     const [open, setOpen] = useState(true);
-    const [intensity, setIntensity] = useState(3); // Default intensity
 
-   
+    // fetch the tip on mount & when intensity or gender changes
     useEffect(() => {
         if (userId) {
             fetchTips();
+            setOpen(true);
         }
-    }, [userId]);
+    }, [userId, intensity, gender]);
 
-    
+    // fetch tips from API
     const fetchTips = async () => {
         try {
             console.log("Fetching tips for userId:", userId);
-
             if (!userId || userId.length !== 24) {
                 console.error("Invalid userId passed:", userId);
                 return;
@@ -27,58 +28,87 @@ const TipsPopup = ({ userId }) => {
             const response = await axios.get(`/api/tips/${userId}`);
             console.log("API Response:", response.data);
 
-            setTips(response.data.tips || []);
+            if (response.data) {
+                setTip(response.data.tip || "No tips available for this level.");
+                setIntensity(response.data.intensity || 1);
+                setGender(response.data.gender || "male"); // make sure the gender syncs
+            }
         } catch (error) {
             console.error('Error fetching tips:', error);
+            setTip("Error loading tips.");
         }
     };
 
-    const handleIntensityChange = async (event) => {
-        const newIntensity = event.target.value;
-        setIntensity(newIntensity);
-        try {
-            await axios.patch(`/api/tips/${userId}/intensity`, { intensity: newIntensity });
-            fetchTips();
-        } catch (error) {
-            console.error('Error updating intensity:', error);
+    // increase intensity & fetch new tip
+    const updateIntensity = async () => {
+        if (intensity < 7) {
+            try {
+                const newIntensity = intensity + 1;
+                const response = await axios.patch(`/api/tips/${userId}`, { intensity: newIntensity });
+
+                console.log("Updated intensity:", response.data);
+                setIntensity(newIntensity);
+                fetchTips(); // fetch new tip immediately!!!
+            } catch (error) {
+                console.error('Error updating intensity:', error);
+            }
         }
     };
 
-    const handleDeleteFeature = async () => {
+    // toggle gender & update backend
+    const updateGender = async () => {
+        const newGender = gender === "male" ? "female" : "male";
         try {
-            await axios.delete(`/api/tips/${userId}`);
-            setTips([]);
-            setOpen(false);
+            const response = await axios.patch(`/api/tips/${userId}`, { gender: newGender });
+
+            console.log("Updated gender:", response.data);
+            setGender(newGender);
+            fetchTips(); // fetch new tip immediately after gender change!!
         } catch (error) {
-            console.error('Error deleting tips feature:', error);
+            console.error('Error updating gender:', error);
         }
     };
 
     return (
         <Dialog open={open} onClose={() => setOpen(false)}>
-            <Box p={3} textAlign='center'>
-                <Typography variant='h6'>Daily Workout Tips</Typography>
-                {tips.length > 0 ? (
-                    tips.map((tip, index) => (
-                        <Typography key={index} variant='body1'>{tip}</Typography>
-                    ))
-                ) : (
-                    <Typography>No tips available</Typography>
-                )}
+            <Box p={3} textAlign="center">
+                <Typography variant="h6">Daily Workout Tip</Typography>
+
+                {/* Display one random tip */}
+                <Typography variant="body1" mt={2}>
+                    {tip || "Loading tips..."}
+                </Typography>
+
+                <Typography variant="body2">Current Intensity: {intensity}</Typography>
 
                 <Box mt={2}>
-                    <Typography variant='body2'>Adjust Workout Intensity:</Typography>
-                    <Select value={intensity} onChange={handleIntensityChange}>
-                        {[1, 2, 3, 4, 5, 6, 7].map(level => (
-                            <MenuItem key={level} value={level}>{level}</MenuItem>
-                        ))}
-                    </Select>
+                    {/* Gender Toggle Button */}
+                    {/* <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={updateGender}
+                    >
+                        Switch to {gender === "male" ? "Female" : "Male"}
+                    </Button> */}
                 </Box>
 
                 <Box mt={2}>
-                    <Button variant='contained' onClick={() => setOpen(false)}>Close</Button>
-                    <Button variant='outlined' color='error' onClick={handleDeleteFeature} sx={{ ml: 2 }}>
-                        Disable Tips Feature
+                    {/* Increase Intensity Button (Disable at max level 7) */}
+                    <Button 
+                        variant="contained" 
+                        color="primary" 
+                        onClick={updateIntensity} 
+                        disabled={intensity >= 7}
+                    >
+                        Increase Intensity
+                    </Button>
+
+                    <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={() => setOpen(false)}
+                    >
+                        Close
                     </Button>
                 </Box>
             </Box>

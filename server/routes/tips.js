@@ -11,58 +11,50 @@ const mongoose = require("mongoose");
 router.get('/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        
-        // first find user details
-        const user = await Tips.findOne({ userId: userId });
-        router.get('/api/tips/:userId', async (req, res) => {
-            try {
-                const { userId } = req.params;
-                const userTips = await db.collection('tips').findOne({ userId: ObjectId(userId) });
-        
-                if (!userTips) {
-                    // and if no tips exist for the user then create default tips
-                    const defaultTips = {
-                        userId: ObjectId(userId),
-                        // default gender
-                        gender: "male",
-                        // default intensity 
-                        intensity: 1, 
-                        // default to enabled
-                        tipsEnabled: true, 
-                    };
-        
-                    await db.collection('tips').insertOne(defaultTips);
-                    // return the default tips
-                    return res.json(defaultTips); 
-                }
-        
-                res.json(userTips);
-            } catch (error) {
-                console.error("Error fetching tips:", error);
-                res.status(500).json({ error: "Internal Server Error" });
-            }
-        });
-        if (!user) {
-            return res.status(404).json({ message: "User tips not found" });
+
+        // make the userId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid userId format" });
         }
 
-        // now get tips based on gender and intensity
+        // find the user's tips entry
+        let userTips = await Tips.findOne({ userId: new mongoose.Types.ObjectId(userId) });
+
+        // if no tips exist for the user create a default entry
+        if (!userTips) {
+            const defaultTips = {
+                userId: new mongoose.Types.ObjectId(userId),
+                gender: "male", // default gender
+                intensity: 1, // default intensity
+                tipsEnabled: true,
+                tips: [
+                    "Stay hydrated!",
+                    "Take deep breaths to improve focus.",
+                    "Maintain good posture to avoid injuries."
+                ]
+            };
+
+            userTips = await Tips.create(defaultTips);
+        }
+
+        //  retrieve tips based on user's gender and intensity
         const tipsData = await Tips.findOne({
-            gender: user.gender, 
-            intensity: user.intensity 
+            gender: userTips.gender,
+            intensity: userTips.intensity
         });
 
-        if (!tipsData) {
-            return res.status(404).json({ message: "No tips available for this level" });
+        if (!tipsData || !tipsData.tips.length) {
+            return res.status(404).json({ message: "No tips available for this intensity and gender" });
         }
 
         // pick a random tip
         const randomTip = tipsData.tips[Math.floor(Math.random() * tipsData.tips.length)];
 
-        res.json({ tip: randomTip, intensity: user.intensity });
+        res.json({ tip: randomTip, intensity: userTips.intensity });
+
     } catch (error) {
-        console.error('Error fetching tips:', error);
-        res.status(500).json({ message: "Server error" });
+        console.error("Error fetching tips:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 

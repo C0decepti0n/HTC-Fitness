@@ -52,6 +52,8 @@ const Settings = mongoose.model('Settings', settingsSchema)
 const Tips = mongoose.model('Tip', TipsSchema);
 const Reminder = mongoose.model('Reminder', reminderSchema);
 
-module.exports = { Exercise, User, Sleep, RoutineSchema, Tips, Settings, Reminder};
+const Routine = mongoose.model('Routine', RoutineSchema);
+
+module.exports = { Exercise, User, Sleep, Routine, Tips, Settings, Reminder};
 
 

@@ -85,7 +85,7 @@ const ExerciseCard = ({ exercise, user }) => {
           {showInstructions ? 'Show Less' : 'Learn More'}
         </Button>
         {showAddButton && (
-          <Button size="small" color="secondary" onClick={handleAddToRoutine}>
+          <Button size="small" color="secondary" onClick={() => handleAddToRoutine(exercise)}>
             Add to Routine
           </Button>
         )}

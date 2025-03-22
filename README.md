@@ -95,7 +95,7 @@ Adjusted timing system accounting for practical bedtime routines.
 
 Set personalized sleep goals and record sleep quality, disturbances, and aids used.
 
-Sleep sessions automatically rated based on goal alignment.
+Sleep sessions automatically rated based on goal alignment..
 
 
 Environment Management: dotenv

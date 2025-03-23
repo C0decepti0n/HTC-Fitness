@@ -203,18 +203,6 @@ const NavBar = ({ setIsAuthenticated }) => {
               <ListItemText primary={'Routines'} />
             </ListItemButton>
           </ListItem>
-          {/* tips */}
-          <ListItem key={'tips'} disablePadding>
-
-            {/* // TODO link Tips route  */}
-
-            <ListItemButton component={Link} to="/tips" onClick={handleDrawerClose}>
-              <ListItemIcon>
-                <TipsIcon />
-              </ListItemIcon>
-              <ListItemText primary={'Tips'} />
-            </ListItemButton>
-          </ListItem>
           {/* reminders  */}
           <ListItem key={'reminders'} disablePadding>
             <ListItemButton component={Link} to="/reminders" onClick={handleDrawerClose}>

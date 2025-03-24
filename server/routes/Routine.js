@@ -23,12 +23,13 @@ router.get('/:userId', async (req, res) => {
 });
 
 // POST a new routine
-router.post('/', async (req, res) => {
-  const { userId, exercise, muscle, sets, reps, weight } = req.body;
+router.post('/:userId', async (req, res) => {
+  const { exercise, muscle, sets, reps, weight } = req.body;
+  const { userId } = req.params
   console.log(`Creating new routine for user: ${userId}`);
 
   try {
-    const newRoutine = new Routine({
+    const newRoutine = await Routine.create({
       userId,
       exercise,
       muscle,

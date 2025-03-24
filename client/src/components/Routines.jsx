@@ -42,26 +42,27 @@ const Routines = ({ userId }) => {
   }, [routineData]);
 
    // function to add an exercise to the routine
-   const handleAddToRoutine = async (exercise) => {
-    try {
-      const response = await axios.post('/api/routines', {
-        userId,
-        exercise: exercise.name,
-        muscle: exercise.muscle,
-        sets: 3,
-        reps: 10,
-        weight: 50, // Default values
-      });
+  //  const handleAddToRoutine = async (exercise) => {
+  //   console.log(userId)
+  //   try {
+  //     const response = await axios.post(`/api/routines/${userId._id}`, {
+  //       userId,
+  //       exercise: exercise.name,
+  //       muscle: exercise.muscle,
+  //       sets: 3,
+  //       reps: 10,
+  //       weight: 50, // Default values
+  //     });
 
       // update routine list with new exercise
-      setRoutineData((prevData) => [...prevData, response.data]);
+      // setRoutineData((prevData) => [...prevData, response.data]);
 
-      alert('Exercise added to routine!');
-    } catch (error) {
-      console.error('Error adding exercise:', error);
-      alert('Failed to add exercise.');
-    }
-  };
+  //     // alert(`Exercise added to routine! ${ userId }`);
+  //   } catch (error) {
+  //     console.error('Error adding exercise:', error);
+  //     alert('Failed to add exercise.');
+  //   }
+  // };
 
   // Handle input changes
   const handleChange = (field, value) => {

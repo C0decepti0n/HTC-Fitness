@@ -10,17 +10,17 @@ Ensure you have Node version 22 installed.
 
 Prerequisites
 
-API Keys
+- API Keys
 
-API Ninjas (Exercises)
+- API Ninjas (Exercises)
 
-Google OAuth Client ID and Secret
+- Google OAuth Client ID and Secret
 
-Randomly generated session secret (Use Node's crypto module)
+- Randomly generated session secret (Use Node's crypto module)
 
-Environment Variables
+- Environment Variables
 
-Create a .env file following the .env.example provided to store your environment variables.
+- Create a .env file following the .env.example provided to store your environment variables.
 
 # Starting the Application
 
@@ -34,7 +34,7 @@ npm run dev
 
 npm run seed
 
-Features
+Authentication Features
 
 User Authentication
 
@@ -92,7 +92,7 @@ Intuitive NavBar with easy access to all app features and logout functionality.
 - Track sleep duration with a convenient timer feature.
 - Adjusted timing system accounting for practical bedtime routines.
 - Set personalized sleep goals and record sleep quality, disturbances, and aids used.
-- Sleep sessions automatically rated based on goal alignment..
+- Sleep sessions automatically rated based on goal alignment.
 - Environment Management: dotenv
 
 # Original Repo Contributors

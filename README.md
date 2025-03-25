@@ -106,7 +106,7 @@ Environment Management: dotenv
 
 # Legacy March 2025 Contributors
 
- Whtiley Legard Antoine [Github] (https://github.com/Wlegard)
+ Whitley Legard Antoine [Github] (https://github.com/Wlegard)
 
 Mary Alice [Github] (https://github.com/malicesand)
 

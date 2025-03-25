@@ -48,7 +48,7 @@ router.post('/:userId', async (req, res) => {
   }
 });
 
-// PATCH (update) an existing routine
+// PATCH (update) a existing routine
 router.patch('/:id', async (req, res) => {
 
 

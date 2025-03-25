@@ -143,10 +143,10 @@ const HomePage = ({ user, exercises, fetchRandomExercises }) => {
   };
   //add exercise to user routine
   const handleAddToRoutine = async (exercise) => {
-    console.log(exercise)
+    console.log(user._id);
+    console.log(exercise);
     try {
-      await axios.post('http://localhost:3000/api/routines', {
-        userId: user._id,
+      await axios.post(`/api/routines/${user._id}`, {
         exercise: exercise.name,
         muscle: exercise.muscle,
         sets: 3,

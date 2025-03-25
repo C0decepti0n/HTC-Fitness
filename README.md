@@ -34,7 +34,7 @@ npm run dev
 
 npm run seed
 
-Authentication Features
+# Authentication Features
 
 User Authentication
 

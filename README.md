@@ -10,17 +10,17 @@ Ensure you have Node version 22 installed.
 
 Prerequisites
 
-API Keys
+- API Keys
 
-API Ninjas (Exercises)
+- API Ninjas (Exercises)
 
-Google OAuth Client ID and Secret
+- Google OAuth Client ID and Secret
 
-Randomly generated session secret (Use Node's crypto module)
+- Randomly generated session secret (Use Node's crypto module)
 
-Environment Variables
+- Environment Variables
 
-Create a .env file following the .env.example provided to store your environment variables.
+- Create a .env file following the .env.example provided to store your environment variables.
 
 # Starting the Application
 
@@ -34,7 +34,7 @@ npm run dev
 
 npm run seed
 
-Features
+# Authentication Features
 
 User Authentication
 
@@ -89,32 +89,26 @@ Intuitive NavBar with easy access to all app features and logout functionality.
 
 # Sleep Tracker
 
-Track sleep duration with a convenient timer feature.
-
-Adjusted timing system accounting for practical bedtime routines.
-
-Set personalized sleep goals and record sleep quality, disturbances, and aids used.
-
-Sleep sessions automatically rated based on goal alignment..
-
-
-Environment Management: dotenv
+- Track sleep duration with a convenient timer feature.
+- Adjusted timing system accounting for practical bedtime routines.
+- Set personalized sleep goals and record sleep quality, disturbances, and aids used.
+- Sleep sessions automatically rated based on goal alignment.
+- Environment Management: dotenv
 
 # Original Repo Contributors
   - Adonijah Johnson Jr [Github](https://github.com/AJ-Gamer)
   - Dakota Day [Github](https://github.com/Mothroom)
 
 # Legacy March 2025 Contributors
+- Charles Sublett: Product Owner [TipsPopup] [Github] (https://github.com/BMH397)
 
- Whtiley Legard Antoine [Github] (https://github.com/Wlegard)
+- Mary Alice: Scrum Master [Settings] [Github] (https://github.com/malicesand)
 
-Mary Alice [Github] (https://github.com/malicesand)
+- Peyton Strahan: Scrum Master [SleepTracker] [Github] (https://github.com/PeytonStrahan)
 
-Charles Sublett [Github] (https://github.com/BMH397)
+- Whitley Legard Antoine [Reminders] [Github] (https://github.com/Wlegard)
 
-Jay Shanks [Github] (https://github.com/taytay836)
-
-Peyton Strahan [Github] (https://github.com/PeytonStrahan)
+- Jay Shanks [Routines] [Github] (https://github.com/taytay836)
 
 Thank you for contributing to making HTC Fitness better for everyone!
 
@@ -132,3 +126,5 @@ Thank you for contributing to making HTC Fitness better for everyone!
 # Known Bugs
   - Navigated pages do not render after the browser page refreshes.
   - Changing (patching) a sleep record via the "Time Slept" property doesn't update the value gotten from Master Timer due to the Master Timer only utilizing the start date and end date of the sleep record. (Best course of action may be to remove or alter the method of the ability to alter the hours_slept property via. patch requests)
+  - Tips pop up gender's automatically set to male by default
+  - When going down in intensity, you have to go to the profile page and select the drop down (select the number you want) and refresh the page

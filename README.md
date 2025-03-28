@@ -100,15 +100,15 @@ Intuitive NavBar with easy access to all app features and logout functionality.
   - Dakota Day [Github](https://github.com/Mothroom)
 
 # Legacy March 2025 Contributors
-- Charles Sublett: Product Owner [TipsPopup] [Github] (https://github.com/BMH397)
+- Charles Sublett: Product Owner/Tip Popups [Github] (https://github.com/BMH397)
 
-- Mary Alice: Scrum Master [Settings] [Github] (https://github.com/malicesand)
+- Mary Alice: Scrum Master/Dashboard Settings [Github] (https://github.com/malicesand)
 
-- Peyton Strahan: Scrum Master [SleepTracker] [Github] (https://github.com/PeytonStrahan)
+- Peyton Strahan: Scrum Master/SleepTracker [Github] (https://github.com/PeytonStrahan)
 
-- Whitley Legard Antoine [Reminders] [Github] (https://github.com/Wlegard)
+- Whitley Legard Antoine: Reminders [Github] (https://github.com/Wlegard)
 
-- Jay Shanks [Routines] [Github] (https://github.com/taytay836)
+- Jay Shanks: Routines [Github] (https://github.com/taytay836)
 
 Thank you for contributing to making HTC Fitness better for everyone!
 
